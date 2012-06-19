@@ -26,6 +26,7 @@
  *-----------------------------------------------------------------------------*/
 
 #include "pgq_backend.hpp"
+#include "config.hpp"
 
 #include <vector>
 #include <map>
@@ -42,7 +43,11 @@
 #include <boost/range/iterator_range.hpp>
 #include <boost/algorithm/string/split.hpp>
 
-#include <libpq-fe.h>
+#ifdef HAVE_POSTGRESQL_LIBPQ_FE_H
+#  include <postgresql/libpq-fe.h>
+#else
+#  include <libpq-fe.h>
+#endif
 
 using std::vector;
 using std::map;
