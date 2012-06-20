@@ -26,7 +26,6 @@
 
 #include "meta_tile.hpp"
 #include "hashwrapper.hpp"
-#include "hss_storage.hpp"
 
 namespace rendermq
 {

@@ -28,7 +28,6 @@
 #define RENDERMQ_HASHWRAPPER_HPP
 
 #include "meta_tile.hpp"
-#include "hss_storage.hpp"
 
 #include <libhashkit/hashkit.h>
 #include <libmemcached/memcached.h>
