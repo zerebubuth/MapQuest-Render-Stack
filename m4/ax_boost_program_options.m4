@@ -101,6 +101,7 @@ AC_DEFUN([AX_BOOST_PROGRAM_OPTIONS],
 				if test "x$link_program_options" != "xyes"; then
 					AC_MSG_ERROR([Could not link against [$ax_lib] !])
 				fi
+				ax_lib=""
 		fi
 		CPPFLAGS="$CPPFLAGS_SAVED"
 	LDFLAGS="$LDFLAGS_SAVED"

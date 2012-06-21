@@ -108,6 +108,7 @@ AC_DEFUN([AX_BOOST_IOSTREAMS],
 			if test "x$link_iostreams" != "xyes"; then
 				AC_MSG_ERROR(Could not link against $ax_lib !)
 			fi
+			ax_lib=""
 		fi
 
 		CPPFLAGS="$CPPFLAGS_SAVED"

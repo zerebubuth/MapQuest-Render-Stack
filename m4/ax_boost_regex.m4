@@ -103,6 +103,7 @@ AC_DEFUN([AX_BOOST_REGEX],
 			if test "x$link_regex" != "xyes"; then
 				AC_MSG_ERROR(Could not link against $ax_lib !)
 			fi
+			ax_lib=""
 		fi
 
 		CPPFLAGS="$CPPFLAGS_SAVED"
