@@ -4,6 +4,9 @@ bin_PROGRAMS = tile_handler tile_broker broker_ctl expire_tiles tile_submitter
 lib_LTLIBRARIES = \
 	librendermq_logging.la librendermq_proto.la librendermq_dqueue.la \
 	librendermq_http.la librendermq_storage.la 
+if HAVE_BOOST_PYTHON
+lib_LTLIBRARIES += tile_storage.la dqueue.la mq_logging.la
+endif
 
 BOOST_LIBS=$(BOOST_LDFLAGS) \
 	$(BOOST_DATE_TIME_LIB) \
@@ -127,9 +130,25 @@ tile_submitter_LDADD = \
 	librendermq_storage.la \
 	$(DEPS_LIBS) $(BOOST_LIBS) 
 
-#	storage/tile_storage_python.cpp \
-#	dqueue/distributed_queue_python.cpp \
-#	logging/python.cpp
+if HAVE_BOOST_PYTHON
+tile_storage_la_SOURCES = \
+	storage/tile_storage_python.cpp
+tile_storage_la_CPPFLAGS = $(DEPS_CFLAGS) $(BOOST_CPPFLAGS) -I$(PYTHON_INCLUDE_DIR)
+tile_storage_la_LIBADD = $(DEPS_LIBS) $(BOOST_LIBS) librendermq_storage.la
+tile_storage_la_LDFLAGS = -module -shared
+
+dqueue_la_SOURCES = \
+	dqueue/distributed_queue_python.cpp
+dqueue_la_CPPFLAGS = $(DEPS_CFLAGS) $(BOOST_CPPFLAGS) -I$(PYTHON_INCLUDE_DIR)
+dqueue_la_LIBADD = $(DEPS_LIBS) $(BOOST_LIBS) librendermq_storage.la
+dqueue_la_LDFLAGS = -module -shared
+
+mq_logging_la_SOURCES = \
+	logging/python.cpp
+mq_logging_la_CPPFLAGS = $(DEPS_CFLAGS) $(BOOST_CPPFLAGS) -I$(PYTHON_INCLUDE_DIR)
+mq_logging_la_LIBADD = $(DEPS_LIBS) $(BOOST_LIBS) librendermq_storage.la
+mq_logging_la_LDFLAGS = -module -shared
+endif
 
 #	storage/expiry_overlay.cpp \
 #	storage/expiry_service.cpp \

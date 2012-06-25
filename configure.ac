@@ -52,6 +52,7 @@ AX_BOOST_FILESYSTEM
 AX_BOOST_THREAD
 AX_BOOST_REGEX
 AX_BOOST_PYTHON
+AM_CONDITIONAL([HAVE_BOOST_PYTHON],[test "x$BOOST_PYTHON_LIB" != "x"])
 
 # Checks for header files.
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h stdint.h string.h sys/socket.h unistd.h])
