@@ -142,7 +142,7 @@ int main (int argc, char** argv)
    try {
       // set up the broker
       zmq::context_t context(1);
-      broker_impl impl(config, argv[2], context);
+      broker_impl impl(config, broker_name, context);
       
       // run the broker
       impl();
