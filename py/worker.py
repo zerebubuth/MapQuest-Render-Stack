@@ -80,9 +80,6 @@ def loadConfig(config):
     else:
         mem_limit = None
 
-    #load the coverages
-    coverageChecker = CoverageChecker(dict(config.items('coverages')))
-
     #load the formats
     formats = dict(config.items('formats'))
     #parse out into a list
@@ -114,7 +111,7 @@ def loadConfig(config):
         sys.exit(1)
 
     #hand them all back
-    return storage, renderers, formats, format_args, coverageChecker, mem_limit
+    return storage, renderers, formats, format_args, mem_limit
 
 if __name__ == "__main__" :
 
@@ -140,7 +137,7 @@ if __name__ == "__main__" :
     config.read(args[0])
 
     #load the items from the config
-    storage, renderers, formats, format_args, coverageChecker, mem_limit = loadConfig(config)
+    storage, renderers, formats, format_args, mem_limit = loadConfig(config)
 
     #use mercator projection
     projection = Mercator(18+1)
