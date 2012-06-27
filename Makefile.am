@@ -140,13 +140,13 @@ tile_storage_la_LDFLAGS = -module -shared
 dqueue_la_SOURCES = \
 	dqueue/distributed_queue_python.cpp
 dqueue_la_CPPFLAGS = $(DEPS_CFLAGS) $(BOOST_CPPFLAGS) -I$(PYTHON_INCLUDE_DIR)
-dqueue_la_LIBADD = $(DEPS_LIBS) $(BOOST_LIBS) librendermq_storage.la
+dqueue_la_LIBADD = $(DEPS_LIBS) $(BOOST_LIBS) librendermq_dqueue.la
 dqueue_la_LDFLAGS = -module -shared
 
 mq_logging_la_SOURCES = \
 	logging/python.cpp
 mq_logging_la_CPPFLAGS = $(DEPS_CFLAGS) $(BOOST_CPPFLAGS) -I$(PYTHON_INCLUDE_DIR)
-mq_logging_la_LIBADD = $(DEPS_LIBS) $(BOOST_LIBS) librendermq_storage.la
+mq_logging_la_LIBADD = $(DEPS_LIBS) $(BOOST_LIBS) librendermq_logging.la
 mq_logging_la_LDFLAGS = -module -shared
 endif
 
