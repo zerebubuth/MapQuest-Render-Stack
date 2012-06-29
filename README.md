@@ -36,6 +36,11 @@ build cycle:
  ./configure
  make && make install
 
+You will also need the following Python modules for the worker:
+* PIL (Python Imaging Library)
+* geojson
+* Shapely
+
 ## Configuration
 
 Please see the examples/ directory for some example configuration
@@ -53,9 +58,10 @@ this is already present, you have configured the worker to point
 to this style file and the handler & worker storage configurations,
 you should be able to run:
 
- ./tile_handler -c tile_handler.conf -C dqueue.conf &
- ./tile_broker dqueue.conf "broker_localhost" &
+ ./tile_handler -c tile_handler.conf -C dqueue.conf -i localhost_0 &
+ ./tile_broker -C dqueue.conf -n "broker_localhost" &
  python py/worker.py worker.conf dqueue.conf &
 
 Mongrel2 should now be serving tiles on the port that you set up in
-its configuration file.  
+its configuration file.
+
