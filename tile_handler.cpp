@@ -335,6 +335,10 @@ tile_handler::handle_request_from_mongrel() {
          m_socket_storage_request << tile;
                         
       } else {
+         std::string path = request.path();
+         // sanitize URL before logging it
+         std::replace_if(path.begin(), path.end(), !(boost::is_alnum() || boost::is_any_of("/.")), '_');
+         LOG_WARNING(boost::format("Can not parse tile URL '%1%'. Sending 404...") % path);
          send_404(m_socket_rep, request.uuid(), request.id());
       }
    }
