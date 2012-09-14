@@ -25,6 +25,7 @@ stamp-h1
 
 # editor temporaries
 *~
+.*.swp
 
 # generated files from building
 .libs/
