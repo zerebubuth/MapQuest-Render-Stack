@@ -612,7 +612,7 @@ zmq_backend_handler::update_live_brokers() {
          // this broker has died and needs to be removed from the rotation.
          router.erase(itr->first);
          hb.is_live = false;
-         LOG_WARNING(boost::format("Broker `%1% appears to have died.") % itr->first);
+         LOG_WARNING(boost::format("Broker `%1%' appears to have died.") % itr->first);
       }
    }
 }

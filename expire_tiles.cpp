@@ -134,6 +134,7 @@ public:
          m_lts_storage.reset(lts_ptr);
       }
 
+      m_num_complete = 0;
       m_min_z = min_z ? min_z.get() : numeric_limits<int>::min();
       m_max_z = max_z ? max_z.get() : numeric_limits<int>::max();
 

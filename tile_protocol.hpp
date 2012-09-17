@@ -200,7 +200,7 @@ inline bool send(zmq::socket_t & socket, tile_protocol const& tile)
    return false;
 }
 
-inline bool send_to(const std::string id, zmq::socket_t & socket, tile_protocol const& tile) {
+inline bool send_to(const std::string & id, zmq::socket_t & socket, tile_protocol const& tile) {
    std::string buf;
    if (serialise(tile, buf)) {
       zmq::message_t msg(id.size()); 

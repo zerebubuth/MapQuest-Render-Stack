@@ -25,6 +25,7 @@ stamp-h1
 
 # editor temporaries
 *~
+.*.swp
 
 # generated files from building
 .libs/
@@ -38,3 +39,7 @@ proto/tile.pb.h
 tile_broker
 tile_handler
 tile_submitter
+
+# python
+*.pyc
+
