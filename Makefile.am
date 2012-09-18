@@ -69,6 +69,7 @@ librendermq_storage_la_SOURCES = \
 	storage/null_handle.cpp \
 	storage/http_storage.cpp \
 	storage/disk_storage.cpp \
+	storage/memcached_storage.cpp \
 	storage/lts_storage.cpp 
 librendermq_storage_la_CPPFLAGS = $(DEPS_CFLAGS) $(BOOST_CPPFLAGS)
 librendermq_storage_la_LIBADD = $(DEPS_LIBS) $(BOOST_LIBS) librendermq_proto.la librendermq_http.la
