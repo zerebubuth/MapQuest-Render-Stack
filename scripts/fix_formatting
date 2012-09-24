@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+#  fix_formatting [FILE] ...
+#
+#  Fix formatting of C++ files according to the standard for this project.
+#
+#  You need the "astyle" program for this (http://astyle.sourceforge.net/, on
+#  Debian/Ubuntu install the "astyle" package.)
+#
+
+exec astyle --style=bsd --indent=spaces=3 --pad-header --unpad-paren --suffix=none $*
+
