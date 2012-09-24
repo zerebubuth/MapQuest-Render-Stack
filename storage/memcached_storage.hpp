@@ -1,6 +1,6 @@
 /*------------------------------------------------------------------------------
  *
- *  This file is part of rendermq  
+ *  This file is part of rendermq
  *
  *  Author: jochen@topf.org
  *
@@ -32,7 +32,8 @@
 
 class memcached_st;
 
-namespace rendermq {
+namespace rendermq
+{
 
 /*
  *  Metatile storage in memcached.
@@ -42,31 +43,33 @@ namespace rendermq {
  *  No creation or expire timestamp is stored. Storage in memcached is
  *  for short-time only, so this should not be needed.
  */
-class memcached_storage : public tile_storage {
-  std::string key_string(const tile_protocol &tile) const;
+class memcached_storage : public tile_storage
+{
+   std::string key_string(const tile_protocol &tile) const;
 public:
-  class handle : public tile_storage::handle {
-  public:
-    handle(const std::pair<metatile_reader::iterator_type, metatile_reader::iterator_type>&);
-    virtual ~handle();
-    virtual bool exists() const;
-    virtual std::time_t last_modified() const;
-    virtual bool data(std::string &) const;
-    virtual bool expired() const;
-  private:
-    std::string tile_data;
-  };
-  friend class handle;
+   class handle : public tile_storage::handle
+   {
+   public:
+      handle(const std::pair<metatile_reader::iterator_type, metatile_reader::iterator_type>&);
+      virtual ~handle();
+      virtual bool exists() const;
+      virtual std::time_t last_modified() const;
+      virtual bool data(std::string &) const;
+      virtual bool expired() const;
+   private:
+      std::string tile_data;
+   };
+   friend class handle;
 
-  memcached_storage(const std::string& options);
-  virtual ~memcached_storage();
+   memcached_storage(const std::string& options);
+   virtual ~memcached_storage();
 
-  boost::shared_ptr<tile_storage::handle> get(const tile_protocol &tile) const;
-  bool get_meta(const tile_protocol &tile, std::string &) const;
-  bool put_meta(const tile_protocol &tile, const std::string &buf) const;
-  bool expire(const tile_protocol &tile) const;
+   boost::shared_ptr<tile_storage::handle> get(const tile_protocol &tile) const;
+   bool get_meta(const tile_protocol &tile, std::string &) const;
+   bool put_meta(const tile_protocol &tile, const std::string &buf) const;
+   bool expire(const tile_protocol &tile) const;
 private:
-  memcached_st* memcache;
+   memcached_st* memcache;
 };
 
 }
