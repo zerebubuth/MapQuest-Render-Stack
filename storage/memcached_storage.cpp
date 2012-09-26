@@ -45,7 +45,15 @@ tile_storage * create_memcached_storage(boost::property_tree::ptree const& pt,
                                         boost::optional<zmq::context_t &> ctx)
 {
    std::string options = pt.get<std::string>("options", "");
-   return new memcached_storage(options);
+   int expire_in_minutes = pt.get<int>("expire", 0);
+
+   /* Memcached interprets an expire time of more than 30 days as an absolute
+    * time stamp, we don't want this so we set this to 0 to mean "no expiry". */
+   if (expire_in_minutes < 0 || expire_in_minutes > 30 * 24 * 60) {
+      expire_in_minutes = 0;
+   }
+
+   return new memcached_storage(options, expire_in_minutes);
 }
 
 const bool registered = register_tile_storage("memcached", create_memcached_storage);
@@ -86,7 +94,7 @@ memcached_storage::handle::data(string& output) const
    return true;
 }
 
-memcached_storage::memcached_storage(const std::string& options)
+memcached_storage::memcached_storage(const std::string& options, int expire_in_minutes) : expire_in_seconds(expire_in_minutes * 60)
 {
    memcache = memcached(options.c_str(), options.size());
 }
@@ -153,7 +161,7 @@ bool memcached_storage::put_meta(const tile_protocol &tile, const std::string &b
 {
    std::cerr << "memcached_storage::put_meta style=" << tile.style << " z=" << tile.z << " x=" << tile.x << " y=" << tile.y << "\n";
    std::string key = key_string(tile);
-   memcached_return_t rc = memcached_set(memcache, key.c_str(), key.size(), buf.c_str(), buf.size(), (time_t)0, (uint32_t)0);
+   memcached_return_t rc = memcached_set(memcache, key.c_str(), key.size(), buf.c_str(), buf.size(), expire_in_seconds, (uint32_t)0);
    if (rc != MEMCACHED_SUCCESS)
    {
       return false;
