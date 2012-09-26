@@ -45,17 +45,16 @@ namespace rendermq
  */
 class memcached_storage : public tile_storage
 {
-   std::string key_string(const tile_protocol &tile) const;
 public:
    class handle : public tile_storage::handle
    {
    public:
-      handle(const std::pair<metatile_reader::iterator_type, metatile_reader::iterator_type>&);
-      virtual ~handle();
-      virtual bool exists() const;
-      virtual std::time_t last_modified() const;
+      handle(const std::pair<metatile_reader::iterator_type, metatile_reader::iterator_type>& p) : tile_data(p.first, p.second) {}
+      virtual ~handle() {}
+      virtual bool exists() const { return true; }
+      virtual std::time_t last_modified() const { return 0; }
       virtual bool data(std::string &) const;
-      virtual bool expired() const;
+      virtual bool expired() const { return false; }
    private:
       std::string tile_data;
    };
@@ -65,12 +64,14 @@ public:
    virtual ~memcached_storage();
 
    boost::shared_ptr<tile_storage::handle> get(const tile_protocol &tile) const;
-   bool get_meta(const tile_protocol &tile, std::string &) const;
+   bool get_meta(const tile_protocol &tile, std::string &data) const;
    bool put_meta(const tile_protocol &tile, const std::string &buf) const;
    bool expire(const tile_protocol &tile) const;
 private:
    int expire_in_seconds;
    memcached_st* memcache;
+
+   std::string key_string(const tile_protocol &tile) const;
 };
 
 }
