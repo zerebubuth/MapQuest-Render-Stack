@@ -61,7 +61,7 @@ public:
    };
    friend class handle;
 
-   memcached_storage(const std::string& options);
+   memcached_storage(const std::string& options, int expire_in_minutes);
    virtual ~memcached_storage();
 
    boost::shared_ptr<tile_storage::handle> get(const tile_protocol &tile) const;
@@ -69,6 +69,7 @@ public:
    bool put_meta(const tile_protocol &tile, const std::string &buf) const;
    bool expire(const tile_protocol &tile) const;
 private:
+   int expire_in_seconds;
    memcached_st* memcache;
 };
 
