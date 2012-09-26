@@ -44,7 +44,7 @@ namespace
 tile_storage * create_memcached_storage(boost::property_tree::ptree const& pt,
                                         boost::optional<zmq::context_t &> ctx)
 {
-   std::string options = pt.get<std::string>("options");
+   std::string options = pt.get<std::string>("options", "");
    return new memcached_storage(options);
 }
 
