@@ -129,7 +129,7 @@ list<string> host_sections(const string &instance)
 
 int main( int argc, char** argv)
 {
-   string config_file, dqueue_config;
+   string config_file, dqueue_config, logging_level;
     
    po::options_description cmdline_options("Mongrel2 Tile Handler\n" 
                                            "Version: " VERSION "\n"
@@ -146,6 +146,8 @@ int main( int argc, char** argv)
       ("queue-config,C", po::value<string>(&dqueue_config)->default_value("dqueue.conf"),
        "Path to distributed queue configuration file.")
       ("logging-config,l", po::value<string>(), "Location of the logging configuration file.")
+      ("logging-level,L", po::value<string>(&logging_level)->default_value("info"),
+       "Logging level ('finer', 'debug', or 'info')")
       ;
    po::variables_map vm;
    try 
@@ -258,6 +260,11 @@ int main( int argc, char** argv)
          std::cerr << "Error while setting up logging from: " << logging_conf_file << "\n";
          exit(EXIT_FAILURE);
       }
+   }
+
+   if (!::rendermq::log::set_level_from_string(logging_level)) {
+      std::cerr << "Unknown logging level: " << logging_level << "\n";
+      exit(EXIT_FAILURE);
    }
 
    // get the dependencies between styles for the purposes of 

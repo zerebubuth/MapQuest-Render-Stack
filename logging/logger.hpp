@@ -77,6 +77,18 @@ public:
    static void warning(const std::string &);
    static void error(const std::string &);
 
+   static bool want_level(log_level::type level)
+   {
+      return instance()->m_log_level <= level;
+   }
+
+   static bool set_level_from_string(const std::string& new_level);
+
+   void set_level(log_level::type new_level)
+   {
+      m_log_level = new_level;
+   }
+
    // to configure the log
    static void configure(const boost::property_tree::ptree &);
 
@@ -84,6 +96,7 @@ public:
 
 private:
    boost::scoped_ptr<logger> m_logger;
+   log_level::type m_log_level;
 };
 
 // factory function to create loggers. if you implement one of these, register
@@ -101,9 +114,10 @@ logger *create_logger(const boost::property_tree::ptree &);
 } // namespace rendermq
 
 // for convenience, some macros to make logging prettier.
+// the trailing "else" eats the semikolon after the macro
 #ifdef RENDERMQ_DEBUG
-#define LOG_FINER(x) ::rendermq::log::finer(x)
-#define LOG_DEBUG(x) ::rendermq::log::debug(x)
+#define LOG_FINER(x) if (::rendermq::log::want_level(::rendermq::log_level::finer)) { ::rendermq::log::finer(x); } else
+#define LOG_DEBUG(x) if (::rendermq::log::want_level(::rendermq::log_level::debug)) { ::rendermq::log::debug(x); } else
 #else /* RENDERMQ_DEBUG */
 // don't even generate code for debug logging if debug mode
 // isn't turned on...

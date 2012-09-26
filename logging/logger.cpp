@@ -87,6 +87,21 @@ void log::debug(const std::string &msg)   { log::instance()->m_logger->log(log_l
 void log::warning(const std::string &msg) { log::instance()->m_logger->log(log_level::warning, msg); }
 void log::error(const std::string &msg)   { log::instance()->m_logger->log(log_level::error,   msg); }
 
+bool log::set_level_from_string(const std::string& new_level)
+{
+    if (new_level == "finer") {
+        log::instance()->set_level(log_level::finer);
+        return true;
+    } else if (new_level == "debug") {
+        log::instance()->set_level(log_level::debug);
+        return true;
+    } else if (new_level == "info") {
+        log::instance()->set_level(log_level::info);
+        return true;
+    }
+    return false; 
+}
+
 void log::configure(const boost::property_tree::ptree &conf) 
 {
    boost::scoped_ptr<logger> new_logger(create_logger(conf));
@@ -102,7 +117,8 @@ void log::configure(const boost::property_tree::ptree &conf)
 }
  
 log::log() 
-   : m_logger(new stdout_logger())
+   : m_logger(new stdout_logger()),
+     m_log_level(log_level::info)
 {
 }
 
