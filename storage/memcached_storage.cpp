@@ -170,10 +170,17 @@ bool memcached_storage::put_meta(const tile_protocol &tile, const std::string &b
 }
 
 /*
- * Marking a tile as expired is a no-op.
+ * A metatile is expired in memcached by deleting it.
  */
 bool memcached_storage::expire(const tile_protocol &tile) const
 {
+   std::cerr << "memcached_storage::expire style=" << tile.style << " z=" << tile.z << " x=" << tile.x << " y=" << tile.y << "\n";
+   std::string key = key_string(tile);
+   memcached_return_t rc = memcached_delete(memcache, key.c_str(), key.size(), 0);
+   if (rc != MEMCACHED_SUCCESS)
+   {
+      return false;
+   }
    return true;
 }
 
