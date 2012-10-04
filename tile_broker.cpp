@@ -61,7 +61,7 @@ int main (int argc, char** argv)
 {
    using namespace rendermq;
 
-   std::string config_file, broker_name;
+   std::string config_file, broker_name, logging_level;
 
    po::options_description cmdline_options("Tile broker\n"
                                            "Version: " VERSION "\n"
@@ -70,6 +70,7 @@ int main (int argc, char** argv)
    cmdline_options.add_options()
       ("help,h", "Print help message")
       ("logging-config,l", po::value<std::string>(), "Location of the logging configuration file.")
+      ("logging-level,L", po::value<string>(&logging_level)->default_value("info"),"Logging level ('finer', 'debug', or 'info')")
       ("queue-config,C", po::value<std::string>(&config_file), "Path to the dqueue configuration file.")
       ("name,n", po::value<std::string>(&broker_name), "The broker name (as used in the dqueue config).")
       ;
@@ -103,6 +104,11 @@ int main (int argc, char** argv)
    if (!vm.count("name") || !vm.count("queue-config"))
    {
       std::cerr << cmdline_options << "\n";
+   }
+
+   if (!::rendermq::log::set_level_from_string(logging_level)) {
+      std::cerr << "Unknown logging level: " << logging_level << "\n";
+      exit(EXIT_FAILURE);
    }
 
    // read config file
