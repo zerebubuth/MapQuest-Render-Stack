@@ -36,6 +36,9 @@ build cycle:
  ./configure
  make && make install
 
+Use "./configure --help" to see the configuration options. If you want
+debugging output use "./configure --enable-debug"
+
 You will also need the following Python modules for the worker:
 * PIL (Python Imaging Library)
 * geojson

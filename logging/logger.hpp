@@ -32,6 +32,8 @@
 #include <mapnik/utils.hpp>
 #include <string>
 
+#include "config.hpp"
+
 namespace rendermq {
 
 namespace log_level {
