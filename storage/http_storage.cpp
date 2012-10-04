@@ -116,7 +116,7 @@ namespace rendermq
       {
          responses = http::multiPostForm(requests, concurrency, connection, headers);
       }
-      catch(std::runtime_error e)
+      catch(const std::runtime_error& e)
       {
          LOG_ERROR(boost::format("Runtime error asynchronously PUTTING tile: %1%") % e.what());
          return false;
@@ -157,7 +157,7 @@ namespace rendermq
                ret = false;
             }
          }
-         catch(std::runtime_error e)
+         catch(const std::runtime_error& e)
          {
             LOG_ERROR(boost::format("Runtime error serially PUTTING tile: %1%") % e.what());
             return false;
@@ -210,7 +210,7 @@ namespace rendermq
       {
          responses = http::multiGet(requests, concurrency, connection, headers);
       }
-      catch(std::runtime_error e)
+      catch(const std::runtime_error& e)
       {
          LOG_ERROR(boost::format("Runtime error asynchronously GETTING tile: %1%") % e.what());
          return false;
@@ -253,7 +253,7 @@ namespace rendermq
             //keep it
             responses.push_back(response);
          }
-         catch(std::runtime_error e)
+         catch(const std::runtime_error& e)
          {
             LOG_FINER(boost::format("Runtime error synchronously GETTING tile: %1%") % e.what());
             return false;

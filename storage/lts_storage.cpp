@@ -481,7 +481,7 @@ namespace rendermq
          //expire replica copy
          http::multiGet(replicaUrls, concurrency, connection, replicaHeaders);
       }
-      catch(std::runtime_error e)
+      catch(const std::runtime_error& e)
       {
          LOG_ERROR(boost::format("Runtime error while expiring LTS tile: %1%") % e.what());
          return false;

@@ -147,7 +147,7 @@ simple_http_storage::get_meta(const tile_protocol &tile, string &data) const
                data += response->body;
                *tileSize = int(response->body.length()); tileSize++;
             }
-            catch(std::runtime_error e)
+            catch(const std::runtime_error& e)
             {
                LOG_ERROR(boost::format("Runtime error while getting LTS (meta) tile: %1%") % e.what());
                return false;
