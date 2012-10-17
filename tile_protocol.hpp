@@ -93,7 +93,7 @@ public:
 
 private:
    std::string data_;
-};
+}; // class tile_protocol
 
 inline std::ostream& operator<< (std::ostream& out, tile_protocol const& t)
 {
@@ -188,47 +188,6 @@ inline bool unserialise(const std::string &buf, tile_protocol &tile) {
    return result;
 }
 
-inline bool send(zmq::socket_t & socket, tile_protocol const& tile)
-{
-   std::string buf;
-   if (serialise(tile, buf))
-   {
-      zmq::message_t msg(buf.size()); 
-      std::memcpy(msg.data(),buf.data(),buf.size());
-      return socket.send(msg);
-   }
-   return false;
-}
-
-inline bool send_to(const std::string & id, zmq::socket_t & socket, tile_protocol const& tile) {
-   std::string buf;
-   if (serialise(tile, buf)) {
-      zmq::message_t msg(id.size()); 
-      std::memcpy(msg.data(),id.data(),id.size());
-
-      // send the ID of the receiver first
-      if (!socket.send(msg, ZMQ_SNDMORE)) return false;
-      msg.rebuild();
-
-      // then a blank spacer message
-      if (!socket.send(msg, ZMQ_SNDMORE)) return false;
-      msg.rebuild(buf.size());
-    
-      // then send the message itself
-      std::memcpy(msg.data(),buf.data(),buf.size());
-      return socket.send(msg);
-   }
-   return false;  
-}
-
-inline bool recv (zmq::socket_t & socket, tile_protocol & tile)
-{
-   zmq::message_t msg;
-   socket.recv(&msg);
-   std::string buf(static_cast<char*>(msg.data()),msg.size());
-   return unserialise(buf, tile);
-}
-
-}
+} // namespace rendermq
 
 #endif // TILE_PROTOCOL_HPP
