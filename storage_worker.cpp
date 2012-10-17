@@ -143,8 +143,6 @@ storage_worker::thread_func(const pt::ptree &conf,
    socket_out.connect(resp_ep);
    socket_in.connect(reqs_ep);
    
-   // local tile object
-   tile_protocol tile;
 
    // event loop
    while (true) 
@@ -172,10 +170,11 @@ storage_worker::thread_func(const pt::ptree &conf,
       }
 
       if (items[0].revents & ZMQ_POLLIN) {
+         tile_protocol tile;
+
          try {
             // read the tile request
             socket_in >> tile;
-
          } 
          catch (const std::exception &e)
          {
@@ -279,9 +278,6 @@ storage_worker::~storage_worker()
 void 
 storage_worker::operator()() {
    try {
-      // temporary tile object
-      tile_protocol tile;
-
       // time to next check for thread death
       bt::ptime next_check_time = bt::microsec_clock::local_time() + 
          bt::microseconds(CHECK_THREAD_DEATH_INTERVAL);
@@ -305,6 +301,7 @@ storage_worker::operator()() {
          // new items either get started, or put on the pending queue
          if (items[0].revents & ZMQ_POLLIN) 
          {
+            tile_protocol tile;
             requests_in >> tile;
         
             if (cur_concurrency < max_concurrency) 
@@ -320,6 +317,7 @@ storage_worker::operator()() {
 
          if (items[1].revents & ZMQ_POLLIN) 
          {
+            tile_protocol tile;
             threads_in >> tile;
             results_out << tile;
 
