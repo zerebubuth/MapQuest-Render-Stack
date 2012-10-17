@@ -26,8 +26,13 @@
 #include "stdout_logger.hpp"
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/microsec_time_clock.hpp>
+#include <boost/thread.hpp>
 #include <sstream>
 #include <cstdio>
+
+// for getpid()
+#include <sys/types.h>
+#include <unistd.h>
 
 using std::ostringstream;
 namespace bt = boost::posix_time;
@@ -49,7 +54,7 @@ void
 stdout_logger::log(log_level::type level, const std::string &msg)
 {
    ostringstream ostr;
-   ostr << bt::microsec_clock::local_time() << " ";
+   ostr << bt::microsec_clock::local_time() << " " << getpid() << "/" << boost::this_thread::get_id() << " ";
    if (level == log_level::finer) {
       ostr << "[FINER] ";
    } else if (level == log_level::debug) {
