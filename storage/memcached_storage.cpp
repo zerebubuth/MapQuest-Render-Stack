@@ -91,12 +91,12 @@ memcached_storage::~memcached_storage()
 shared_ptr<tile_storage::handle>
 memcached_storage::get(const tile_protocol &tile) const
 {
-   LOG_DEBUG(boost::format("memcached_storage::get style=%1% z=%2% x=%3% y=%4%") % tile.style % tile.z % tile.x % tile.y);
+   LOG_DEBUG(boost::format("memcached_storage::get(%1%)") % tile);
 
    std::string data;
    if (!get_meta(tile, data))
    {
-      LOG_DEBUG("memcached_storage::get tile not found");
+      LOG_DEBUG("memcached_storage::get(): tile not found");
       return shared_ptr<tile_storage::handle>(new null_handle());
    }
 
@@ -105,11 +105,11 @@ memcached_storage::get(const tile_protocol &tile) const
    if (tile_data.first == tile_data.second)
    {
       std::cerr << "  metatile format corrupt\n";
-      LOG_ERROR(boost::format("Metatile corrupt (style=%1% z=%2% x=%3% y=%4%).") % tile.style % tile.z % tile.x % tile.y);
+      LOG_ERROR(boost::format("Metatile corrupt (%1%).") % tile);
       return shared_ptr<tile_storage::handle>(new null_handle());
    }
 
-   LOG_DEBUG("memcached_storage::get tile found");
+   LOG_DEBUG("memcached_storage::get(): tile found");
    return boost::make_shared<handle>(tile_data);
 }
 
@@ -128,7 +128,7 @@ std::string memcached_storage::key_string(const tile_protocol &tile) const
 
 bool memcached_storage::get_meta(const tile_protocol &tile, std::string &data) const
 {
-   LOG_DEBUG(boost::format("memcached_storage::get_meta style=%1% z=%2% x=%3% y=%4%") % tile.style % tile.z % tile.x % tile.y);
+   LOG_DEBUG(boost::format("memcached_storage::get_meta(%1%)") % tile);
    std::string key = key_string(tile);
    size_t value_length;
    uint32_t flags;
@@ -145,7 +145,7 @@ bool memcached_storage::get_meta(const tile_protocol &tile, std::string &data) c
 
 bool memcached_storage::put_meta(const tile_protocol &tile, const std::string &buf) const
 {
-   LOG_DEBUG(boost::format("memcached_storage::put_meta style=%1% z=%2% x=%3% y=%4%") % tile.style % tile.z % tile.x % tile.y);
+   LOG_DEBUG(boost::format("memcached_storage::put_meta(%1%)") % tile);
    std::string key = key_string(tile);
    memcached_return_t rc = memcached_set(memcache, key.c_str(), key.size(), buf.c_str(), buf.size(), expire_in_seconds, (uint32_t)0);
    if (rc != MEMCACHED_SUCCESS)
