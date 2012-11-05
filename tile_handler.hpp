@@ -140,6 +140,7 @@ public:
                 bool stale_render_background,
                 size_t max_io_threads,
                 const std::string &dqueue_config,
+                const std::string& tile_path_template,
                 const boost::property_tree::ptree &storage_conf,
                 const style_rules &rules,
                 const std::map<std::string, std::list<std::string> > &dirty_list);

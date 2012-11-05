@@ -163,6 +163,7 @@ tile_handler::tile_handler(const string &handler_id,
                            bool stale_render_background,
                            size_t max_io_threads,
                            const string &dqueue_config,
+                           const std::string& tile_path_template,
                            const pt::ptree &storage_conf,
                            const style_rules &rules,
                            const map<string, list<string> > &dirty_list)
@@ -176,9 +177,10 @@ tile_handler::tile_handler(const string &handler_id,
      m_queue_threshold_max(queue_threshold_max),
      m_stale_render_background(stale_render_background),
      m_style_rules(rules),
-     m_queue_runner(dqueue_config, m_context), 
+     m_queue_runner(dqueue_config, m_context),
      m_socket_storage_request(m_context),
-     m_socket_storage_results(m_context)
+     m_socket_storage_results(m_context),
+     m_path_parse(tile_path_template)
 {
    LOG_INFO(boost::format("Init tile handler with ID: %1%") % m_str_handler_id);
 

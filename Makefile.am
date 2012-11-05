@@ -76,7 +76,6 @@ librendermq_storage_la_LIBADD = $(DEPS_LIBS) $(BOOST_LIBS) librendermq_proto.la 
 
 tile_handler_SOURCES = \
 	mongrel_request.cpp \
-	tile_path_parser.cpp \
 	mongrel_request_parser.cpp \
 	storage_worker.cpp \
 	tile_handler_main.cpp \

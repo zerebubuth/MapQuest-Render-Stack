@@ -281,7 +281,11 @@ int main( int argc, char** argv)
       conf.get<size_t>("mongrel2.queue_threshold_max", DEFAULT_QUEUE_THRESHOLD_MAX),                    
       conf.get<bool>("mongrel2.stale_render_background", false),
       conf.get<size_t>("mongrel2.max_io_concurrency", DEFAULT_IO_MAX_CONCURRENCY),
-      dqueue_config, conf.get_child("tiles"), style_rules, dirty_deps);
+      dqueue_config,
+      conf.get<std::string>("mongrel2.tile_path_template", "/tiles/1.0.0/{STYLE}/{Z}/{X}/{Y}.{FORMAT}"),
+      conf.get_child("tiles"),
+      style_rules,
+      dirty_deps);
 
    handler();
     
