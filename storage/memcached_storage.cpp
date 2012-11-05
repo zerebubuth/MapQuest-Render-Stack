@@ -122,7 +122,12 @@ std::string memcached_storage::key_string(const tile_protocol &tile) const
 {
    std::pair<int, int> coordinates = xy_to_meta_xy(tile.x, tile.y);
    std::ostringstream key;
-   key << "/" << tile.style << "/" << tile.z << "/" << coordinates.first << "/" << coordinates.second << "." << file_type_for(tile.format);
+   key << "/" << tile.style << "/" << tile.z << "/" << coordinates.first << "/" << coordinates.second << "/" << file_type_for(tile.format);
+
+   BOOST_FOREACH(const tile_protocol::parameters_t::value_type& param, tile.parameters) {
+      key << "/" << param.second;
+   }
+
    return key.str();
 }
 
