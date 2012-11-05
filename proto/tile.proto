@@ -1,5 +1,12 @@
 package rendermq.proto;
 
+/* An optional map style parameter.
+ */
+message parameter {
+   required string key = 1;
+   required string value = 2;
+}
+
 /* Tile description and data.
  *
  * This is the fundamental data structure which is passed between
@@ -64,4 +71,7 @@ message tile {
    // in here and must be maintained throughout the lifetime of the
    // message. This allows the handler to be nearly stateless.
    optional uint64 request_last_modified = 10;
+
+   // Zero or more map style parameters.
+   repeated parameter parameters = 11;
 }

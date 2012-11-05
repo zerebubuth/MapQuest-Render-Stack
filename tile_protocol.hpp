@@ -30,14 +30,16 @@
 #include <ostream>
 #include <zmq.hpp>
 #include <boost/unordered_map.hpp>
+#include <boost/foreach.hpp>
 #include <cstring> // for memcpy
 #include <ctime> // for std::time_t
 #include "tile_utils.hpp"
-#include "tile_protocol.hpp"
 #include "proto/tile.pb.h"
 #include "storage/meta_tile.hpp" // for METATILE size
+#include "logging/logger.hpp"
 #include <iostream>
 #include <vector>
+#include <map>
 
 namespace rendermq
 {
@@ -57,21 +59,38 @@ class tile_protocol
 {
 
 public:
+   typedef std::map<std::string, std::string> parameters_t;
+
    tile_protocol()
-      : status(cmdRenderPrio), x(0), y(0), z(0), id(0), style(""), format(fmtPNG), last_modified(0), request_last_modified(0) {}
+      : status(cmdRenderPrio), x(0), y(0), z(0), id(0), style(""), parameters(), format(fmtPNG), last_modified(0), request_last_modified(0) {}
    tile_protocol(protoCmd status_,int x_,int y_, int z_, int64_t id_, const std::string & style_, protoFmt format_, std::time_t last_mod_=0, std::time_t req_last_mod_=0)
-      : status(status_), x(x_), y(y_), z(z_), id(id_), style(style_), format(format_), last_modified(last_mod_), request_last_modified(req_last_mod_) {}
+      : status(status_), x(x_), y(y_), z(z_), id(id_), style(style_), parameters(), format(format_), last_modified(last_mod_), request_last_modified(req_last_mod_) {}
    tile_protocol(tile_protocol const& other)
       : status(other.status), 
         x(other.x), y(other.y), 
         z(other.z), id(other.id),
         style(other.style),
+        parameters(other.parameters),
         format(other.format),
         last_modified(other.last_modified),
         request_last_modified(other.request_last_modified),
         data_(other.data_)
       {}
-    
+
+   const tile_protocol& operator=(tile_protocol const& other) {
+      status = other.status;
+      x = other.x;
+      y = other.y;
+      z = other.z;
+      id = other.id;
+      style = other.style;
+      parameters = other.parameters;
+      format = other.format;
+      last_modified = other.last_modified;
+      request_last_modified = other.request_last_modified;
+      data_ = other.data_;
+   }
+
    std::string const& data() const
       {
          return data_;
@@ -87,6 +106,7 @@ public:
    int z;
    int64_t id;
    std::string style;
+   parameters_t parameters;
    protoFmt format;
    std::time_t last_modified;
    std::time_t request_last_modified;
@@ -123,8 +143,15 @@ inline std::ostream& operator<< (std::ostream& out, tile_protocol const& t)
    if (t.last_modified > 0) { out << " last_modified=" << t.last_modified; }
    if (t.request_last_modified > 0) { out << " request_last_modified=" << t.request_last_modified; }
 
-   out << " id=" << t.id << " style=" << t.style
-       << " data.size()=" << t.data().size() ;
+   out << " id=" << t.id << " style=" << t.style;
+   if (!t.parameters.empty()) {
+      out << " (parameters:";
+      BOOST_FOREACH(tile_protocol::parameters_t::value_type p, t.parameters) {
+         out << " " << p.first << "=" << p.second;
+      }
+      out << ")";
+   }
+   out << " data.size()=" << t.data().size();
    return out;
 }
 
@@ -132,7 +159,7 @@ inline bool operator==(tile_protocol const &a, tile_protocol const &b) {
    // note: we're missing out the status, since that's expected to change.
    return 
       a.x == b.x && a.y == b.y && a.z == b.z && 
-      a.id == b.id && a.style == b.style &&
+      a.id == b.id && a.style == b.style && a.parameters == b.parameters &&
       a.format == b.format;
 }
 
@@ -167,6 +194,13 @@ inline bool serialise(const tile_protocol &tile, std::string &buf) {
    t.set_format(tile.format);
    if (tile.last_modified != 0) { t.set_last_modified(tile.last_modified); }
    if (tile.request_last_modified != 0) { t.set_request_last_modified(tile.request_last_modified); }
+
+   BOOST_FOREACH(tile_protocol::parameters_t::value_type p, tile.parameters) {
+      proto::parameter* pp = t.add_parameters();
+      pp->set_key(p.first);
+      pp->set_value(p.second);
+   }
+
    return t.SerializeToString(&buf);
 }
 
@@ -184,6 +218,11 @@ inline bool unserialise(const std::string &buf, tile_protocol &tile) {
       tile.format = static_cast<rendermq::protoFmt>(t.format());
       tile.last_modified = t.has_last_modified() ? t.last_modified() : 0;
       tile.request_last_modified = t.has_request_last_modified() ? t.request_last_modified() : 0;
+
+      for (int i=0; i < t.parameters_size(); ++i) {
+         const proto::parameter& p = t.parameters(i);
+         tile.parameters.insert(std::make_pair<std::string, std::string>(p.key(), p.value()));
+      }
    }
    return result;
 }
