@@ -66,6 +66,7 @@ class Renderer:
        job.y = tile.y
        job.z = tile.z
        job.style = tile.style
+       job.lang = tile.lang
        job.format = self.job_formats(self.formats)
        data = self.storage.get_meta(job)
        

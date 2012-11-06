@@ -96,6 +96,7 @@ class Tile:
 		#save different bits of info
 		self.size = (pixels, pixels)
 		self.style = job.style
+		self.lang = job.lang
 		self.scale = scales[job.z]
 		self.dimensions = (size, size)
 		#place holder for mapware image type

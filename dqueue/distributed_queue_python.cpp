@@ -44,6 +44,26 @@ std::string tile_protocol_to_string(const tile_protocol &t)
    ostr << t;
    return ostr.str();
 }
+
+// Return optional "lang" map style parameter
+const std::string tile_protocol_get_lang(const tile_protocol &t) {
+   std::map<std::string, std::string>::const_iterator it = t.parameters.find("lang");
+   if (it == t.parameters.end()) {
+      return std::string();
+   } else {
+      return it->second;
+   }
+}
+
+// Set optional "lang" map style parameter
+void tile_protocol_set_lang(tile_protocol &t, const std::string& lang) {
+   if (lang == "") {
+      t.parameters.erase("lang");
+   } else {
+      t.parameters["lang"] = lang;
+   }
+}
+
 }
 
 BOOST_PYTHON_MODULE(dqueue) {
@@ -82,6 +102,8 @@ BOOST_PYTHON_MODULE(dqueue) {
         .def_readwrite("format", &tile_protocol::format)
         .def_readwrite("last_modified", &tile_protocol::last_modified)
         .def("__str__", &tile_protocol_to_string)
+        .add_property("lang", make_function(&tile_protocol_get_lang,return_value_policy<return_by_value>()),
+                      &tile_protocol_set_lang)
         .add_property("data", make_function(&tile_protocol::data,return_value_policy<copy_const_reference>()),
                       &tile_protocol::set_data)
         ;

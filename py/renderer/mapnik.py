@@ -37,6 +37,9 @@ from mapnik2 import Projection
 from mapnik2 import Box2d
 from mapnik2 import Coord
 from mapnik2 import CompositeOp
+from mapnik2 import CreateDatasource
+
+import re
 
 #from tile_pb2 import tile
 from mercator import Mercator
@@ -124,6 +127,18 @@ class Renderer :
 	#no data so no feature collection
 	return None
 
+    # If the tile has a language parameter, change the datasource definition
+    # in the map so that the language setting is taken into account. This is
+    # currently a bit of a hack, but can be improved later.
+    def adjust_language(self, map, lang):
+        if lang:
+            for layer in self.default_map.layers:
+                if layer.name.startswith("placenames-"):
+                    mq_logging.info("LAYER: %s" % layer.name)
+                    params = layer.datasource.params().as_dict()
+                    params['table'] = re.sub(r'(name|coalesce.*) as name', "coalesce(tags -> 'name:" + lang + "', name) as name", params['table'])
+                    layer.datasource = CreateDatasource(params)
+
     def process(self, tile):
         #from lat,lng bbox to mapnik bbox
         p0 = self.map_proj.forward(Coord(tile.bbox[0][1],tile.bbox[0][0]))
@@ -137,6 +152,7 @@ class Renderer :
             if result[0]:
                 result[1].resize(image.width(),image.height())
                 result[1].zoom_to_box(bbox)
+                self.adjust_language(result(1), tile.lang)
                 render(result[1],image)
                 features = self.save_rendered_metadata(result[1], tile.size, tile.dimensions)
             else :
@@ -145,11 +161,13 @@ class Renderer :
                 # mask style
                 self.mask_map.resize(image.width(),image.height())
                 self.mask_map.zoom_to_box(bbox)
+                self.adjust_language(self.mask_map, tile.lang)
                 render(self.mask_map,image)
                 
                 # default style
                 self.default_map.resize(default_image.width(),default_image.height())
                 self.default_map.zoom_to_box(bbox)
+                self.adjust_language(self.default_map, tile.lang)
                 render(self.default_map,default_image)
                 features = self.save_rendered_metadata(self.default_map, tile.size, tile.dimensions)
                 
@@ -160,6 +178,7 @@ class Renderer :
                 result[1].resize(image.width(),image.height())
                 result[1].zoom_to_box(bbox)
                 image.set_alpha(0)
+                self.adjust_language(result[1], tile.lang)
                 render(result[1],image)
                 if features is not None:
                     features.features.extend(self.save_rendered_metadata(result[1], tile.size, tile.dimensions).features)
@@ -172,6 +191,7 @@ class Renderer :
             # use default style
             self.default_map.resize(image.width(),image.height())
             self.default_map.zoom_to_box(bbox)
+            self.adjust_language(self.default_map, tile.lang)
             render(self.default_map,image)
             features = self.save_rendered_metadata(self.default_map, tile.size, tile.dimensions)
 

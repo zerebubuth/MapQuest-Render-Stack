@@ -50,7 +50,10 @@ from coverage.CoverageChecker import CoverageChecker
 from transcode import Transcode, TranscodeMeta
 from geojson import dumps
 
-def notify (job, queue):
+def dumptile(tile):
+    return "%s %s %s '%s' (lang=%s) %s" % (tile.z, tile.x, tile.y, tile.style, tile.lang, tile.id)
+
+def notify(job, queue):
     notified = False
     while notified == False:
         try:
@@ -165,7 +168,7 @@ if __name__ == "__main__" :
                 continue
         
 
-        mq_logging.info("Got task: %s %s %s '%s' id=%d" % (job.z,job.x,job.y,job.style,job.id))
+        mq_logging.info("Got task: " + dumptile(job))
         
         try:
             img_formats = formats[job.style]
@@ -178,7 +181,7 @@ if __name__ == "__main__" :
                 raise Exception("Request for renderer `%s', which is not configured." % job.style)
 
         except Exception as ex:
-            mq_logging.error("Couldn't fulfill request for z=%s x=%s y=%s style='%s', sending ignore. Error: %s." % (job.z, job.x, job.y, job.style, str(ex)))
+            mq_logging.error("Couldn't fulfill request for %s, sending ignore. Error: %s." % (dumptile(job), str(ex)))
             job.status = dqueue.ProtoCommand.cmdIgnore
             notify(job, queue)
             continue
@@ -211,7 +214,7 @@ if __name__ == "__main__" :
             if tile_exists:
                 job.status = dqueue.ProtoCommand.cmdIgnore
                 job.last_modified = handle.last_modified()
-                mq_logging.info("EXISTS METATILE %d:%d:%d:%s tile-size=%d" % (job.z,job.x,job.y,job.style,len(job.data)))
+                mq_logging.info("EXISTS METATILE %s tile-size=%d" % (dumptile(job), len(job.data)))
                 notify (job, queue)
             else:
                 try:
@@ -233,12 +236,13 @@ if __name__ == "__main__" :
     
                     if job.status!=dqueue.ProtoCommand.cmdDirty and job.status!=dqueue.ProtoCommand.cmdRenderBulk :
                         job.data = meta_tile
-                    mq_logging.info("DONE METATILE %d:%d:%d:%s tile-size=%d" % (job.z,job.x,job.y,job.style,len(job.data)))
+                    mq_logging.info("DONE METATILE %s tile-size=%d" % (dumptile(job), len(job.data)))
                     job.status = dqueue.ProtoCommand.cmdDone
                     job.last_modified = int(time.time())
                 except Exception as detail:
-                        mq_logging.error('%s' % (detail))
-			job.satus = dqueue.ProtoCommand.cmdIgnore
+                        mq_logging.error('Exception: %s' % (detail))
+                        raise
+			job.status = dqueue.ProtoCommand.cmdIgnore # XXX
 
                 notify (job, queue)
 
