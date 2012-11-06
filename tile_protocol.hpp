@@ -196,9 +196,11 @@ inline bool serialise(const tile_protocol &tile, std::string &buf) {
    if (tile.request_last_modified != 0) { t.set_request_last_modified(tile.request_last_modified); }
 
    BOOST_FOREACH(tile_protocol::parameters_t::value_type p, tile.parameters) {
-      proto::parameter* pp = t.add_parameters();
-      pp->set_key(p.first);
-      pp->set_value(p.second);
+      if (p.second != "") {
+         proto::parameter* pp = t.add_parameters();
+         pp->set_key(p.first);
+         pp->set_value(p.second);
+      }
    }
 
    return t.SerializeToString(&buf);
