@@ -43,8 +43,8 @@ namespace rendermq
 namespace
 {
 
-tile_storage * create_memcached_storage(boost::property_tree::ptree const& pt,
-                                        boost::optional<zmq::context_t &> ctx)
+tile_storage* create_memcached_storage(boost::property_tree::ptree const& pt,
+                                       boost::optional<zmq::context_t &> ctx)
 {
    std::string options = pt.get<std::string>("options", "--SERVER=localhost");
    int expire_in_minutes = pt.get<int>("expire", 0);
@@ -88,8 +88,7 @@ memcached_storage::~memcached_storage()
    }
 }
 
-shared_ptr<tile_storage::handle>
-memcached_storage::get(const tile_protocol &tile) const
+shared_ptr<tile_storage::handle> memcached_storage::get(const tile_protocol& tile) const
 {
    LOG_DEBUG(boost::format("memcached_storage::get(%1%)") % tile);
 
@@ -118,18 +117,18 @@ memcached_storage::get(const tile_protocol &tile) const
  * an important difference: Because we store metatiles, the key contains the coordinates
  * of the first tile in the metatile.
  */
-std::string memcached_storage::key_string(const tile_protocol &tile) const
+std::string memcached_storage::key_string(const tile_protocol& tile) const
 {
    std::pair<int, int> coordinates = xy_to_meta_xy(tile.x, tile.y);
    std::ostringstream key;
-   key << "/" << tile.style << "/" << tile.z << "/" << coordinates.first << "/" << coordinates.second << "." << file_type_for(tile.format);
+   key << "/" << tile.style << "/" << tile.z << "/" << coordinates.first << "/" << coordinates.second << "/" << file_type_for(tile.format);
    return key.str();
 }
 
-bool memcached_storage::get_meta(const tile_protocol &tile, std::string &data) const
+bool memcached_storage::get_meta(const tile_protocol& tile, std::string& data) const
 {
    LOG_DEBUG(boost::format("memcached_storage::get_meta(%1%)") % tile);
-   std::string key = key_string(tile);
+   const std::string key = key_string(tile);
    size_t value_length;
    uint32_t flags;
    memcached_return_t error;
@@ -143,10 +142,10 @@ bool memcached_storage::get_meta(const tile_protocol &tile, std::string &data) c
    return true;
 }
 
-bool memcached_storage::put_meta(const tile_protocol &tile, const std::string &buf) const
+bool memcached_storage::put_meta(const tile_protocol& tile, const std::string& buf) const
 {
    LOG_DEBUG(boost::format("memcached_storage::put_meta(%1%)") % tile);
-   std::string key = key_string(tile);
+   const std::string key = key_string(tile);
    memcached_return_t rc = memcached_set(memcache, key.c_str(), key.size(), buf.c_str(), buf.size(), expire_in_seconds, (uint32_t)0);
    if (rc != MEMCACHED_SUCCESS)
    {
@@ -159,10 +158,10 @@ bool memcached_storage::put_meta(const tile_protocol &tile, const std::string &b
 /*
  * A metatile is expired in memcached by deleting it.
  */
-bool memcached_storage::expire(const tile_protocol &tile) const
+bool memcached_storage::expire(const tile_protocol& tile) const
 {
    LOG_DEBUG(boost::format("memcached_storage::expire style=%1% z=%2% x=%3% y=%4%") % tile.style % tile.z % tile.x % tile.y);
-   std::string key = key_string(tile);
+   const std::string key = key_string(tile);
    memcached_return_t rc = memcached_delete(memcache, key.c_str(), key.size(), 0);
    if (rc != MEMCACHED_SUCCESS)
    {
