@@ -130,13 +130,16 @@ class Renderer :
     # If the tile has a language parameter, change the datasource definition
     # in the map so that the language setting is taken into account. This is
     # currently a bit of a hack, but can be improved later.
-    def adjust_language(self, map, lang):
-        if lang:
+    def adjust_language(self, map, languages):
+        if languages:
             for layer in self.default_map.layers:
                 if layer.name.startswith("placenames-"):
                     mq_logging.info("LAYER: %s" % layer.name)
                     params = layer.datasource.params().as_dict()
-                    params['table'] = re.sub(r'(name|coalesce.*) as name', "coalesce(tags -> 'name:" + lang + "', name) as name", params['table'])
+                    c = "coalesce("
+                    for lang in languages.split(","):
+                        c += "tags -> 'name:" + lang + "',"
+                    params['table'] = re.sub(r'(name|coalesce.*) as name', c + " name) as name", params['table'])
                     layer.datasource = CreateDatasource(params)
 
     def process(self, tile):
