@@ -124,13 +124,22 @@ public:
      * the end and should not be part of your template.
      */
     tile_path_parser(const std::string& path_template) {
+        const boost::xpressive::sregex template_chars_regex = boost::xpressive::sregex::compile("([.?*+|()^$])"); // matches special regex characters
         const boost::xpressive::sregex template_param_regex = boost::xpressive::sregex::compile("{\\s*([A-Za-z0-9_]+)\\s*}"); // matches template parameter names in {}
         const url_pattern_formatter formatter(additional_params);
-        std::string path_regex_string = boost::xpressive::regex_replace(path_template, template_param_regex, formatter);
+
+        // escape special regex characters in template path
+        const std::string path_escaped_special = boost::xpressive::regex_replace(path_template, template_chars_regex, "\\$1");
+
+        // replace {PARAM} template parameters with regex named captures
+        std::string path_regex_string = boost::xpressive::regex_replace(path_escaped_special, template_param_regex, formatter);
+
+        // add capture for optional command suffix
         path_regex_string += "(/(?P<COMMAND>(status|dirty)))?";
 
         LOG_DEBUG(boost::format("Build path regex '%1%' from template '%2%'.") % path_regex_string % path_template);
 
+        // compile and remember final regex
         path_regex = boost::xpressive::sregex::compile(path_regex_string);
     }
 
