@@ -92,82 +92,93 @@ shared_ptr<tile_storage::handle> memcached_storage::get(const tile_protocol& til
 {
    LOG_DEBUG(boost::format("memcached_storage::get(%1%)") % tile);
 
-   std::string data;
-   if (!get_meta(tile, data))
-   {
-      LOG_DEBUG("memcached_storage::get(): tile not found");
-      return shared_ptr<tile_storage::handle>(new null_handle());
-   }
-
-   metatile_reader reader(data, tile.format);
-   std::pair<metatile_reader::iterator_type, metatile_reader::iterator_type> tile_data = reader.get(tile.x, tile.y);
-   if (tile_data.first == tile_data.second)
-   {
-      std::cerr << "  metatile format corrupt\n";
-      LOG_ERROR(boost::format("Metatile corrupt (%1%).") % tile);
-      return shared_ptr<tile_storage::handle>(new null_handle());
-   }
-
-   LOG_DEBUG("memcached_storage::get(): tile found");
-   return boost::make_shared<handle>(tile_data);
-}
-
-/* Create a string from the tile data that can be used as key for lookup in the memcache.
- * The string will look very similar to the usual file path/URL for tiles. But there is
- * an important difference: Because we store metatiles, the key contains the coordinates
- * of the first tile in the metatile.
- */
-std::string memcached_storage::key_string(const tile_protocol& tile) const
-{
-   std::pair<int, int> coordinates = xy_to_meta_xy(tile.x, tile.y);
-   std::ostringstream key;
-   key << "/" << tile.style << "/" << tile.z << "/" << coordinates.first << "/" << coordinates.second << "/" << file_type_for(tile.format);
-   return key.str();
-}
-
-bool memcached_storage::get_meta(const tile_protocol& tile, std::string& data) const
-{
-   LOG_DEBUG(boost::format("memcached_storage::get_meta(%1%)") % tile);
    const std::string key = key_string(tile);
    size_t value_length;
    uint32_t flags;
    memcached_return_t error;
    char* value = memcached_get(memcache, key.c_str(), key.size(), &value_length, &flags, &error);
-   if (value == NULL)
-   {
-      return false;
+   if (value == NULL) {
+      LOG_DEBUG("memcached_storage::get(): tile not found");
+      return shared_ptr<tile_storage::handle>(new null_handle());
    }
+   std::string data;
    data.append(value, value_length);
    free(value);
-   return true;
+
+   LOG_DEBUG("memcached_storage::get(): tile found");
+   return boost::make_shared<handle>(std::make_pair(data.begin(), data.end()));
 }
 
+/* Create a string from the tile data that can be used as key for lookup in the memcache.
+ * The string will look very similar to the usual file path/URL for tiles.
+ */
+std::string memcached_storage::key_string(const tile_protocol& tile) const
+{
+   std::ostringstream key;
+   key << "/" << tile.style << "/" << tile.z << "/" << tile.x << "/" << tile.y << "/" << file_type_for(tile.format);
+   return key.str();
+}
+
+// this always returns false, because it is unclear how this should be implemented
+bool memcached_storage::get_meta(const tile_protocol& tile, std::string& data) const
+{
+   LOG_DEBUG(boost::format("memcached_storage::get_meta(%1%)") % tile);
+
+   return false;
+}
+
+/**
+ * Write metatile by iterating over all subtiles and writing them to memcached.
+ */
 bool memcached_storage::put_meta(const tile_protocol& tile, const std::string& buf) const
 {
    LOG_DEBUG(boost::format("memcached_storage::put_meta(%1%)") % tile);
-   const std::string key = key_string(tile);
-   memcached_return_t rc = memcached_set(memcache, key.c_str(), key.size(), buf.c_str(), buf.size(), expire_in_seconds, (uint32_t)0);
-   if (rc != MEMCACHED_SUCCESS)
-   {
-      LOG_ERROR(boost::format("Can not store metatile in memcached (%1%).") % key);
-      return false;
+
+   metatile_reader reader(buf, tile.format);
+
+   tile_protocol subtile(tile);
+   for (int x = 0; x < METATILE; ++x) {
+      subtile.x = tile.x + x;
+      for (int y = 0; y < METATILE; ++y) {
+         subtile.y = tile.y + y;
+         LOG_DEBUG(boost::format("memcached_storage::put_meta() writing subtile %1%") % subtile);
+         std::pair<metatile_reader::iterator_type, metatile_reader::iterator_type> tile_data = reader.get(x, y);
+         const std::string key = key_string(subtile);
+         const char* value = &*(tile_data.first); // ugh!
+         const int size = tile_data.second - tile_data.first;
+         memcached_return_t rc = memcached_set(memcache, key.c_str(), key.size(), value, size, expire_in_seconds, (uint32_t)0);
+         if (rc != MEMCACHED_SUCCESS) {
+            LOG_ERROR(boost::format("Can not store tile in memcached (%1%).") % key);
+            return false;
+         }
+      }
    }
+
    return true;
 }
 
 /*
- * A metatile is expired in memcached by deleting it.
+ * A metatile is expired in memcached by deleting all its subtiles.
  */
 bool memcached_storage::expire(const tile_protocol& tile) const
 {
+   bool success = true;
    LOG_DEBUG(boost::format("memcached_storage::expire style=%1% z=%2% x=%3% y=%4%") % tile.style % tile.z % tile.x % tile.y);
-   const std::string key = key_string(tile);
-   memcached_return_t rc = memcached_delete(memcache, key.c_str(), key.size(), 0);
-   if (rc != MEMCACHED_SUCCESS)
-   {
-      return false;
+
+   tile_protocol subtile(tile);
+   for (int x = 0; x < METATILE; ++x) {
+      subtile.x = tile.x + x;
+      for (int y = 0; y < METATILE; ++y) {
+         subtile.y = tile.y + y;
+         const std::string key = key_string(subtile);
+         memcached_return_t rc = memcached_delete(memcache, key.c_str(), key.size(), 0);
+         if (rc != MEMCACHED_SUCCESS) {
+            success = false;
+         }
+      }
    }
-   return true;
+
+   return success;
 }
 
 }
