@@ -106,11 +106,6 @@ int main (int argc, char** argv)
       std::cerr << cmdline_options << "\n";
    }
 
-   if (!::rendermq::log::set_level_from_string(logging_level)) {
-      std::cerr << "Unknown logging level: " << logging_level << "\n";
-      exit(EXIT_FAILURE);
-   }
-
    // read config file
    pt::ptree config;
    try 
@@ -143,6 +138,13 @@ int main (int argc, char** argv)
          exit(EXIT_FAILURE);
       }
    }
+
+   if (!::rendermq::log::set_level_from_string(logging_level)) {
+      std::cerr << "Unknown logging level: " << logging_level << "\n";
+      exit(EXIT_FAILURE);
+   }
+
+   LOG_INFO("Starting tile_broker...");
 
    // main entry point for broker:
    try {

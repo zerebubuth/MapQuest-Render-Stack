@@ -62,9 +62,9 @@ public:
    typedef std::map<std::string, std::string> parameters_t;
 
    tile_protocol()
-      : status(cmdRenderPrio), x(0), y(0), z(0), id(0), style(""), parameters(), format(fmtPNG), last_modified(0), request_last_modified(0) {}
-   tile_protocol(protoCmd status_,int x_,int y_, int z_, int64_t id_, const std::string & style_, protoFmt format_, std::time_t last_mod_=0, std::time_t req_last_mod_=0)
-      : status(status_), x(x_), y(y_), z(z_), id(id_), style(style_), parameters(), format(format_), last_modified(last_mod_), request_last_modified(req_last_mod_) {}
+      : status(cmdRenderPrio), x(0), y(0), z(0), id(0), style(""), parameters(), format(fmtPNG), last_modified(0), request_last_modified(0), priority(-1) {}
+   tile_protocol(protoCmd status_,int x_,int y_, int z_, int64_t id_, const std::string & style_, protoFmt format_, std::time_t last_mod_=0, std::time_t req_last_mod_=0, uint32_t priority_=-1)
+      : status(status_), x(x_), y(y_), z(z_), id(id_), style(style_), parameters(), format(format_), last_modified(last_mod_), request_last_modified(req_last_mod_), priority(priority_=-1) {}
    tile_protocol(tile_protocol const& other)
       : status(other.status), 
         x(other.x), y(other.y), 
@@ -74,6 +74,7 @@ public:
         format(other.format),
         last_modified(other.last_modified),
         request_last_modified(other.request_last_modified),
+        priority(other.priority),
         data_(other.data_)
       {}
 
@@ -88,6 +89,7 @@ public:
       format = other.format;
       last_modified = other.last_modified;
       request_last_modified = other.request_last_modified;
+      priority = other.priority;
       data_ = other.data_;
    }
 
@@ -100,6 +102,20 @@ public:
          data_ = data;
       }
 
+   // Return priority for this tile. If it was not set explicitly it is
+   // derived from the status.
+   int32_t get_priority() const {
+      if (priority >= 0) {
+         return priority;
+      }
+
+      if (status == cmdRenderBulk) return 0;
+      else if (status == cmdDirty) return 50;
+      else if (status == cmdRenderPrio) return 150;
+
+      return 100;
+   }
+
    protoCmd status;
    int x;
    int y;
@@ -110,6 +126,7 @@ public:
    protoFmt format;
    std::time_t last_modified;
    std::time_t request_last_modified;
+   int32_t priority;
 
 private:
    std::string data_;
@@ -151,12 +168,12 @@ inline std::ostream& operator<< (std::ostream& out, tile_protocol const& t)
       }
       out << ")";
    }
-   out << " data.size()=" << t.data().size();
+   out << " priority=" << t.priority << " data.size()=" << t.data().size();
    return out;
 }
 
 inline bool operator==(tile_protocol const &a, tile_protocol const &b) {
-   // note: we're missing out the status, since that's expected to change.
+   // note: we're missing out the status/priority, since that's expected to change.
    return 
       a.x == b.x && a.y == b.y && a.z == b.z && 
       a.id == b.id && a.style == b.style && a.parameters == b.parameters &&
@@ -192,6 +209,8 @@ inline bool serialise(const tile_protocol &tile, std::string &buf) {
    t.set_image(tile.data());
    t.set_style(tile.style);
    t.set_format(tile.format);
+
+   if (tile.priority >= 0) { t.set_priority(tile.priority); }
    if (tile.last_modified != 0) { t.set_last_modified(tile.last_modified); }
    if (tile.request_last_modified != 0) { t.set_request_last_modified(tile.request_last_modified); }
 
@@ -220,6 +239,7 @@ inline bool unserialise(const std::string &buf, tile_protocol &tile) {
       tile.format = static_cast<rendermq::protoFmt>(t.format());
       tile.last_modified = t.has_last_modified() ? t.last_modified() : 0;
       tile.request_last_modified = t.has_request_last_modified() ? t.request_last_modified() : 0;
+      tile.priority = t.has_priority() ? t.priority() : -1;
 
       for (int i=0; i < t.parameters_size(); ++i) {
          const proto::parameter& p = t.parameters(i);

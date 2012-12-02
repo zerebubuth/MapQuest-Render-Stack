@@ -178,6 +178,7 @@ tile_handler::tile_handler(const string &handler_id,
      m_stale_render_background(stale_render_background),
      m_style_rules(rules),
      m_queue_runner(dqueue_config, m_context),
+     m_storage_conf(storage_conf),
      m_socket_storage_request(m_context),
      m_socket_storage_results(m_context),
      m_path_parse(tile_path_template)
@@ -571,9 +572,12 @@ style_rules::rewrite_and_check(tile_protocol &tile) const
 }
 
 void
-tile_handler::send_to_queue(const rendermq::tile_protocol &tile)
+tile_handler::send_to_queue(rendermq::tile_protocol &tile)
 {
    bool error = true;
+
+   tile.priority = tile.get_priority(); // base priority from command
+   tile.priority += m_storage_conf.get(pt::path(tile.style + ".priority", '/'), 0); // plus optional style priority
 
    try
    {

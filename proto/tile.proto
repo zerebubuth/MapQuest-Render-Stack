@@ -74,4 +74,8 @@ message tile {
 
    // Zero or more map style parameters.
    repeated parameter parameters = 11;
+
+   // Optional queuing priority. If this is not set, default priorities
+   // derived from the command are used.
+   optional uint32 priority = 12;
 }

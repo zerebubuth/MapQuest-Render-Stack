@@ -169,7 +169,7 @@ private:
     * message and, if there is a connection id associated with the
     * tile, send an error response back to the client.
     */
-   void send_to_queue(const rendermq::tile_protocol &tile);
+   void send_to_queue(rendermq::tile_protocol &tile);
    
    // zeromq socket context used in the handler
    zmq::context_t m_context;
@@ -201,7 +201,9 @@ private:
 
    // the queue of rendering jobs
    dqueue::runner m_queue_runner;
-   
+ 
+   const boost::property_tree::ptree& m_storage_conf;
+ 
    // sockets for sending requests and receiving results from the storage
    // worker thread, respectively.
    zstream::socket::push m_socket_storage_request;

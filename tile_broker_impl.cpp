@@ -23,6 +23,8 @@
  *
  *-----------------------------------------------------------------------------*/
 
+#include "config.hpp"
+
 #include "tile_broker_impl.hpp"
 
 #include "task_queue.hpp"
@@ -335,13 +337,10 @@ broker_impl::operator()() {
       
       zstream::manip::routing_headers headers(client_addresses);
       impl->frontend_rep >> headers >> tile;
-      
-      int priority = 100;
-      if (tile.status == cmdRenderBulk ) priority = 0;
-      else if (tile.status == cmdDirty) priority = 50;
-      else if (tile.status == cmdRenderPrio) priority = 150;
 
-      LOG_FINER(boost::format("Tile request: %1% priority=%2%") % tile % priority);
+      int priority = tile.get_priority();
+
+      LOG_FINER(boost::format("Tile request: %1% get_priority()=%2%") % tile % priority);
 
       // take a look at the highest priority task in the queue before we add this one.
       boost::optional<const task &> front_task = impl->queue.front();
