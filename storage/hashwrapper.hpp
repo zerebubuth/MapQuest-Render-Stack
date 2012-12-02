@@ -27,11 +27,14 @@
 #ifndef RENDERMQ_HASHWRAPPER_HPP
 #define RENDERMQ_HASHWRAPPER_HPP
 
+#include "config.hpp"
+
 #include "meta_tile.hpp"
 
-#include <libhashkit/hashkit.h>
 #ifdef HAVE_LIBHASHKIT_1_0_HASHKIT_HPP
-# include "<libhashkit-1.0/hashkit.hpp>"
+# include <libhashkit-1.0/hashkit.hpp>
+#else
+# include <libhashkit/hashkit.h>
 #endif
 
 #include <libmemcached/memcached.h>
