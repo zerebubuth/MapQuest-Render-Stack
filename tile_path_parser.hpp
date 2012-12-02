@@ -72,7 +72,7 @@ class tile_path_parser : boost::noncopyable {
 
       url_pattern_formatter(std::vector<std::string>& ap) :
          prefix("(?P<"),
-         suffix(">[-A-Za-z0-9_,|]*)"),
+         suffix(">[-A-Za-z0-9_.%,|]*)"),
          params(),
          additional_params(ap) {
             params["style"]  = "(?P<style>[A-Za-z0-9_]+)"; // map style
@@ -143,6 +143,41 @@ public:
       path_regex = boost::xpressive::sregex::compile(path_regex_string);
    }
 
+   inline char hex2num(char c) {
+      if (c >= '0' && c <= '9') return c - '0';
+      if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+      if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+      return 0;
+   }
+
+   /**
+    * Decodes %XX escapes. Returns empty string if something looks fishy.
+    */
+   inline std::string url_decode(const std::string& in) {
+      std::string out;
+
+      const char* c = in.c_str();
+      while (c[0]) {
+         if (c[0] == '%') {
+            if (isxdigit(c[1]) && isxdigit(c[2])) {
+               char r = hex2num(c[1]) * 16 + hex2num(c[2]);
+               if (!isalnum(r) && r != '_' && r != '-' && r != '.' && r != ',' && r != '|') {
+                  return "";
+               }
+               out += r;
+               c+=3;
+            } else {
+               return "";
+            }
+         } else {
+            out += c[0];
+            c++;
+         }
+      }
+
+      return out;
+   }
+
    /**
    * Match given URL path. Returns true if there is a match, false otherwise.
    * Sets all matched parameters in the Results class.
@@ -184,7 +219,7 @@ public:
       }
 
       BOOST_FOREACH(const std::string& ap, additional_params) {
-         results.parameters[ap] = match_results[ap];
+         results.parameters[ap] = url_decode(match_results[ap]);
       }
 
       return true;
