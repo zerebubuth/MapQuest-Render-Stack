@@ -133,14 +133,21 @@ class Renderer :
     def adjust_language(self, map, languages):
         if languages:
             for layer in self.default_map.layers:
-                if layer.name.startswith("placenames-"):
-                    mq_logging.info("LAYER: %s" % layer.name)
-                    params = layer.datasource.params().as_dict()
-                    c = "coalesce("
-                    for lang in languages.split(","):
-                        c += "tags -> 'name:" + lang + "',"
-                    params['table'] = re.sub(r'(name|coalesce.*) as name', c + " name) as name", params['table'])
-                    layer.datasource = CreateDatasource(params)
+                params = layer.datasource.params().as_dict()
+                lc = []
+                for lines in languages.split("|"):
+                    langs = []
+                    for lang in lines.split(","):
+                        if lang == '_':
+                            langs.append("name")
+                        else:
+                            langs.append("tags->'name:" + lang + "'")
+                    lc.append('coalesce(' + ','.join(langs) + ')')
+                if len(lc) > 1:
+                    lc[1] = "'(' || " + lc[1] + " || ')'"
+                c = " || E'\\n' || ".join(lc)
+                params['table'] = re.sub(re.compile('(name|\(?coalesce.*) as name', re.DOTALL), "(" + c + ") as name", params['table'])
+                layer.datasource = CreateDatasource(params)
 
     def process(self, tile):
         #from lat,lng bbox to mapnik bbox
