@@ -72,7 +72,7 @@ class tile_path_parser : boost::noncopyable {
 
       url_pattern_formatter(std::vector<std::string>& ap) :
          prefix("(?P<"),
-         suffix(">[-A-Za-z0-9_,]*)"),
+         suffix(">[-A-Za-z0-9_,|]*)"),
          params(),
          additional_params(ap) {
             params["style"]  = "(?P<style>[A-Za-z0-9_]+)"; // map style
