@@ -40,6 +40,7 @@ AC_SEARCH_LIBS([CMQExec], [mqclient], [AC_DEFINE([HAVE_MQCLIENT], [1], [Define i
 AC_SEARCH_LIBS([PQconnectdb], [pq], [AC_DEFINE([HAVE_PQ], [1], [Define if you have the PQ PostgreSQL client library])])
 AC_CHECK_HEADERS([postgresql/libpq-fe.h libpq-fe.h],[break],[AC_MSG_ERROR([PostgreSQL headers not found or not usable])])
 AM_CONDITIONAL([WANT_MAPWARE_TILER], [test "x$have_mqclient" = "xyes"])
+AC_CHECK_HEADERS_ONCE([libhashkit-1.0/hashkit.hpp])
 
 # Check pkg-config packaged packages.
 PKG_CHECK_MODULES([DEPS], [libmemcached >= 0.49 protobuf >= 2.4.0 libzmq >= 2.1.10 libcurl >= 7.19.5]) 

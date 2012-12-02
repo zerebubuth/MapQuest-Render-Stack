@@ -30,6 +30,10 @@
 #include "meta_tile.hpp"
 
 #include <libhashkit/hashkit.h>
+#ifdef HAVE_LIBHASHKIT_1_0_HASHKIT_HPP
+# include "<libhashkit-1.0/hashkit.hpp>"
+#endif
+
 #include <libmemcached/memcached.h>
 #include <stdexcept>
 #include <vector>
