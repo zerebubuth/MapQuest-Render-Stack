@@ -46,7 +46,12 @@ namespace
 tile_storage* create_memcached_storage(boost::property_tree::ptree const& pt,
                                        boost::optional<zmq::context_t &> ctx)
 {
+   // Options for memcached connection, see memcached documentation for
+   // possible values.
    std::string options = pt.get<std::string>("options", "--SERVER=localhost");
+
+   // Max expire time in minutes. Because memcached uses LRU, tiles might be
+   // deleted earlier if they don't fit into memory.
    int expire_in_minutes = pt.get<int>("expire", 0);
 
    /* Memcached interprets an expire time of more than 30 days as an absolute

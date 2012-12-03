@@ -40,8 +40,6 @@ namespace rendermq
  *
  *  Metatiles are stored in memcached in the same format used elsewhere.
  *
- *  No creation or expire timestamp is stored. Storage in memcached is
- *  for short-time only, so this should not be needed.
  */
 class memcached_storage : public tile_storage
 {
