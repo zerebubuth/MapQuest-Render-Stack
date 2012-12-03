@@ -134,20 +134,30 @@ class Renderer :
         if languages:
             for layer in self.default_map.layers:
                 params = layer.datasource.params().as_dict()
-                lc = []
-                for lines in languages.split("|"):
-                    langs = []
-                    for lang in lines.split(","):
-                        if lang == '_':
-                            langs.append("name")
-                        else:
-                            langs.append("tags->'name:" + lang + "'")
-                    lc.append('coalesce(' + ','.join(langs) + ')')
-                if len(lc) > 1:
-                    lc[1] = "'(' || " + lc[1] + " || ')'"
-                c = " || E'\\n' || ".join(lc)
-                params['table'] = re.sub(re.compile('(name|\(?coalesce.*) as name', re.DOTALL), "(" + c + ") as name", params['table'])
-                layer.datasource = CreateDatasource(params)
+                if params.get('labelhint', '') != '':
+                    lc = []
+                    for lines in languages.split("|"):
+                        langs = []
+                        for lang in lines.split(","):
+                            if lang == '_':
+                                langs.append("name")
+                            else:
+                                langs.append("tags->'name:" + lang + "'")
+                        langs.append("''")
+                        lc.append('coalesce(' + ','.join(langs) + ')')
+                    if len(lc) > 1:
+                        lc[1] = "'[' || " + lc[1] + " || ']'"
+                    if len(lc) > 2:
+                        lc[2] = "'[' || " + lc[2] + " || ']'"
+                    if len(lc) > 3:
+                        lc[3] = "'[' || " + lc[3] + " || ']'"
+                    if params.get('labelhint', '') == 'replace-multiline':
+                        c = " || E'\\n' || ".join(lc)
+                    else:
+                        c = " || ' ' || ".join(lc)
+                    params['table'] = re.sub(re.compile('(name|\(?coalesce.*) as name', re.DOTALL), "(" + c + ") as name", params['table'])
+                    mq_logging.info("QUERY: layer='%s' labelhint='%s' table='%s'" % (layer.name, params.get('labelhint', ''), params['table']))
+                    layer.datasource = CreateDatasource(params)
 
     def process(self, tile):
         #from lat,lng bbox to mapnik bbox
