@@ -1,5 +1,7 @@
 ACLOCAL_AMFLAGS = -I m4
 
+CXXFLAGS = -Wall -Wno-long-long -pedantic
+
 bin_PROGRAMS = tile_handler tile_broker broker_ctl expire_tiles tile_submitter
 lib_LTLIBRARIES = \
 	librendermq_logging.la librendermq_proto.la librendermq_dqueue.la \
