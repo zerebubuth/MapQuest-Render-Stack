@@ -225,7 +225,7 @@ struct zmq_backend_worker::task_communicator {
       state_trying_to_get_job, /* client code asked for a job and a 
                                 * request to a broker has been sent 
                                 * out */
-      state_job_processing,    /* client code has a job and is working 
+      state_job_processing     /* client code has a job and is working 
                                 * on it. */
    };
 

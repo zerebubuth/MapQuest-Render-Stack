@@ -91,6 +91,7 @@ public:
       request_last_modified = other.request_last_modified;
       priority = other.priority;
       data_ = other.data_;
+      return *this;
    }
 
    std::string const& data() const

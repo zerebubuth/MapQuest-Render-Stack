@@ -102,4 +102,5 @@ namespace rendermq
 		return pHashKit->digest(hashValue);
 	}
 
-};
+} // namespace rendermq
+
