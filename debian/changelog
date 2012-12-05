@@ -1,0 +1,6 @@
+rendermq (0.1) wheezy; urgency=low
+
+  * Initial standalone debian package
+
+ -- Jochen Topf <jochen@topf.org>  Wed, 5 Dec 2012 10:37:00 +0100
+

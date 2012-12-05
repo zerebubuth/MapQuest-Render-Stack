@@ -1,0 +1,18 @@
+#! /bin/sh
+
+set -e
+
+if ! getent passwd rendermq >/dev/null; then
+    adduser --group --system --no-create-home --shell /bin/bash --home /var/lib/rendermq rendermq
+fi	
+
+for dir in /var/run/rendermq /var/log/rendermq /var/lib/rendermq; do
+    [ -d $dir ] || mkdir -p $dir && chown rendermq:rendermq $dir
+done
+
+dpkg-statoverride --list /var/log/rendermq >/dev/null || \
+   dpkg-statoverride --update --add rendermq adm 0750 /var/log/rendermq
+dpkg-statoverride --list /var/run/rendermq >/dev/null || \
+   dpkg-statoverride --update --add rendermq root 0755 /var/run/rendermq
+
+#DEBHELPER#

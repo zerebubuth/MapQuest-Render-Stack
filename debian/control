@@ -1,0 +1,14 @@
+Source: rendermq
+Section: misc
+Priority: optional
+Maintainer: Jochen Topf <jochen@topf.org>
+Build-Depends: debhelper (>= 7), autoconf (>= 2.68), automake (>= 1:1.11.1), libzmq-dev (>= 2.1.10), libprotobuf-dev (>=2.4.0), protobuf-compiler (>= 2.4.0), libgd2-xpm-dev (>= 2.0.35) | libgd2-noxpm-dev (>= 2.0.35), libcurl3-dev | libcurl4-dev, libmemcached-dev, libboost-dev (>= 1.45), libbz2-dev, libboost-python-dev (>= 1.4.5)
+Standards-Version: 3.9.1
+Homepage: https://github.com/MapQuest/MapQuest-Render-Stack
+
+Package: rendermq
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libzmq1 (>= 2.1.10), libprotobuf7 (>=2.4.0), libgd2 (>= 2.0.35), libcurl3 | libcurl4, libmemcached (>= 0.49), libbz2-1.0, python (>= 2.6)
+Recommends: memcached
+Description: Tile render stack for OpenStreetMap and other maps.
+ Programs to handle, queue, and render web map tile requests.
