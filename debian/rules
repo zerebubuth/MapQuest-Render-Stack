@@ -39,7 +39,7 @@ clean:
 	rm -f build-stamp configure-stamp
 
 	# Add here commands to clean up after the build process.
-	$(MAKE) clean || /bin/true
+	$(MAKE) distclean || /bin/true
 
 	dh_clean 
 
@@ -51,6 +51,9 @@ install: build
 
 	# Add here commands to install the package into debian/libosmium-dev.
 	$(MAKE) DESTDIR=$(CURDIR)/debian/rendermq install
+
+	# this silences a lintian error, do we need this? is there a more elegant way todo this?
+	rm $(CURDIR)/debian/rendermq/usr/lib/*.la
 
 
 # Build architecture-independent files here.
