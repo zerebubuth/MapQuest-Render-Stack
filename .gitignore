@@ -43,3 +43,12 @@ tile_submitter
 # python
 *.pyc
 
+# debuild
+build-stamp
+configure-stamp
+debian/files
+debian/rendermq.*.debhelper
+debian/rendermq.debhelper.log
+debian/rendermq.substvars
+debian/rendermq
+
