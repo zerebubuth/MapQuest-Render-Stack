@@ -53,8 +53,11 @@ install: build
 	$(MAKE) DESTDIR=$(CURDIR)/debian/rendermq install
 
 	# this silences a lintian error, do we need this? is there a more elegant way todo this?
-	rm $(CURDIR)/debian/rendermq/usr/lib/*.la
+	rm -f $(CURDIR)/debian/rendermq/usr/lib/*.la
 
+	install -d $(CURDIR)/debian/rendermq/etc/rendermq
+	install -m 0644 examples/dqueue.conf $(CURDIR)/debian/rendermq/etc/rendermq/dqueue.conf.example
+	install -m 0644 examples/tile_handler.conf $(CURDIR)/debian/rendermq/etc/rendermq/tile_handler.conf.example
 
 # Build architecture-independent files here.
 binary-indep: build install
