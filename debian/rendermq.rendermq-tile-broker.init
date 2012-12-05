@@ -32,7 +32,7 @@ SCRIPTNAME=/etc/init.d/rendermq-tilebroker
 CONFDIR="/etc/rendermq"
 ENABLE_TILE_BROKER=no
 BROKER_NAME="broker_localhost"
-[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+[ -r /etc/default/rendermq ] && . /etc/default/rendermq
 
 # Load the VERBOSE setting and other rcS variables
 . /lib/init/vars.sh

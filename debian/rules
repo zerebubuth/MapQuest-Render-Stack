@@ -72,6 +72,7 @@ binary-arch: build install
 #	dh_installpam
 #	dh_installmime
 #	dh_python2
+	dh_installinit
 	dh_installinit --name=rendermq-tile-broker
 	dh_installinit --name=rendermq-tile-handler
 #	dh_installcron
