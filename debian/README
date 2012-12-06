@@ -2,12 +2,6 @@
 This directory contains the necessary files to build packages for Debian and
 related distributions.
 
- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-         THIS IS SOME PRELIMINARY WORK, IT DOES NOT WORK YET!
-
- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 First install the "devscripts" and "debhelper" packages.
 
 To build the debian package call (in the main directory):

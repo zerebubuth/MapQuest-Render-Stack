@@ -4,10 +4,14 @@
 #
 
 LOGDIR=/var/log/rendermq
-PYTHONPATH=/usr/lib/rendermq/pythonlibs
+
+exec >$LOGDIR/worker-$$.log 2>&1
+
+export PYTHONPATH=/usr/lib/rendermq/pythonlibs
 
 while true; do
-    /usr/lib/rendermq/worker/worker.py $* >$LOGDIR/worker-$$.log 2>&1
+    echo "Starting worker.py..."
+    /usr/lib/rendermq/worker/worker.py $*
     sleep 1
 done
 

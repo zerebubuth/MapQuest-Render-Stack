@@ -52,7 +52,7 @@ do_start()
 	#   2 if daemon could not be started
     if [ $WORKERS != 0 ]; then
         for num in `seq 1 $WORKERS`; do
-	        start-stop-daemon --start --quiet --background --make-pidfile --pidfile $PIDFILE.$NUM.pid --exec $DAEMON --chuid $USER -- $DAEMON_ARGS || return 2
+	        start-stop-daemon --start --quiet --background --make-pidfile --pidfile $PIDFILE.$num.pid --exec $DAEMON --chuid $USER -- $DAEMON_ARGS || return 2
         done
     else
         echo "$NAME disabled in /etc/default/rendermq, set WORKERS to nonzero value to enable."
@@ -72,8 +72,9 @@ do_stop()
 	#   1 if daemon was already stopped
 	#   2 if daemon could not be stopped
 	#   other if a failure occurred
-    killall rendermq-run-worker
-    killall worker.py
+    ps ax | grep rendermq-run-worker | grep -v grep | cut -d' ' -f1
+    sleep 1
+    ps ax | grep worker.py | grep -v grep | cut -d' ' -f1 | xargs kill
 	return 0
 }
 
