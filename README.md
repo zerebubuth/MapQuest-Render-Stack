@@ -26,7 +26,6 @@ First, you'll need the prerequisites:
 * libmemcached >= 0.49
 * python >= 2.6
 * boost >= 1.45
-* libbz2 
 * libpq
 
 You should be able to run the standard autotools generate, configure,

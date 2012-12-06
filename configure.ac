@@ -32,7 +32,7 @@ AC_ARG_ENABLE([debug], AS_HELP_STRING([--enable-debug], [Build with debugging]))
 AS_IF([test "x$enable_debug" = "xyes"], [AC_DEFINE([RENDERMQ_DEBUG], [1], [Build with debugging])])
 
 # Checks for libraries.
-AC_SEARCH_LIBS([BZ2_bzReadOpen], [bz2], [], [AC_MSG_FAILURE([bz2 library files not found, please install libbz2-dev])])
+#AC_SEARCH_LIBS([BZ2_bzReadOpen], [bz2], [], [AC_MSG_FAILURE([bz2 library files not found, please install libbz2-dev])])
 AC_SEARCH_LIBS([gdImageCreateFromJpegPtr], [gd], [], [AC_MSG_FAILURE([gd library files not found, please install libgd2-xpm-dev])])
 # FIXME: Replace `CMQExec' with a function in `-lmqclient':
 AC_SEARCH_LIBS([CMQExec], [mqclient], [AC_DEFINE([HAVE_MQCLIENT], [1], [Define if you have the MQClient library]),
