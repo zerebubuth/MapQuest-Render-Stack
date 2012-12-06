@@ -1,6 +1,6 @@
 #! /bin/sh
 ### BEGIN INIT INFO
-# Provides:          rendermq-tilehandler
+# Provides:          rendermq-tile-handler
 # Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
@@ -22,7 +22,7 @@ DAEMON=/usr/bin/$NAME
 USER=rendermq
 LOGLEVEL="info"
 PIDFILE=/var/run/rendermq/$NAME.pid
-SCRIPTNAME=/etc/init.d/rendermq-tilehandler
+SCRIPTNAME=/etc/init.d/rendermq-tile-handler
 
 # Exit if the package is not installed
 [ -x "$DAEMON" ] || exit 0
