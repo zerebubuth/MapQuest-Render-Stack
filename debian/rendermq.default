@@ -1,10 +1,18 @@
 # set this to 'yes' if you want enable the tile_handler
 ENABLE_TILE_HANDLER=no
+
 # set this to 'yes' if you want enable the tile_broker
 ENABLE_TILE_BROKER=no
+
+# set this to the number of workers (renderers) you want to start
+WORKERS=0
+
 # configuration directory
 CONFDIR="/etc/rendermq"
+
 # tile_handler instance name
 INSTANCE="localhost_0"
+
 # the name of the tile_broker
 BROKER_NAME="broker_localhost"
+

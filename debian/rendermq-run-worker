@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+#  rendermq-run-worker
+#
+
+LOGDIR=/var/log/rendermq
+
+while true; do
+    /usr/lib/rendermq/worker/worker.py $* >$LOGDIR/worker-$$.log 2>&1
+    sleep 1
+done
+

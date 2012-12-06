@@ -55,11 +55,19 @@ install: build
 	# this silences a lintian error, do we need this? is there a more elegant way todo this?
 	rm -f $(CURDIR)/debian/rendermq/usr/lib/*.la
 
+	# config files
 	install -d $(CURDIR)/debian/rendermq/etc/rendermq
 	install -m 0644 examples/dqueue.conf $(CURDIR)/debian/rendermq/etc/rendermq/dqueue.conf.example
 	install -m 0644 examples/tile_handler.conf $(CURDIR)/debian/rendermq/etc/rendermq/tile_handler.conf.example
 	install -m 0644 examples/tile_handler_logging.conf $(CURDIR)/debian/rendermq/etc/rendermq/tile_handler_logging.conf.example
 	install -m 0644 examples/tile_broker_logging.conf $(CURDIR)/debian/rendermq/etc/rendermq/tile_broker_logging.conf.example
+	install -m 0644 examples/worker.conf $(CURDIR)/debian/rendermq/etc/rendermq/worker.conf.example
+
+	# the worker (mapnik renderer) is written in python
+	# this is certainly the wrong way to install python scripts, but it has to do for the moment
+	install -d $(CURDIR)/debian/rendermq/usr/lib/rendermq/worker
+	cp -R py/* $(CURDIR)/debian/rendermq/usr/lib/rendermq/worker/
+	install -m 0755 debian/rendermq-run-worker $(CURDIR)/debian/rendermq/usr/bin
 
 # Build architecture-independent files here.
 binary-indep: build install
@@ -83,6 +91,7 @@ binary-arch: build install
 	dh_installinit
 	dh_installinit --name=rendermq-tile-broker
 	dh_installinit --name=rendermq-tile-handler
+	dh_installinit --name=rendermq-worker
 #	dh_installcron
 #	dh_installinfo
 	dh_installman
