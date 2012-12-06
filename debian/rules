@@ -49,11 +49,17 @@ install: build
 	dh_prep
 	dh_installdirs
 
-	# Add here commands to install the package into debian/libosmium-dev.
+	# Add here commands to install the package into debian/rendermq.
 	$(MAKE) DESTDIR=$(CURDIR)/debian/rendermq install
 
 	# this silences a lintian error, do we need this? is there a more elegant way todo this?
 	rm -f $(CURDIR)/debian/rendermq/usr/lib/*.la
+
+	# "make install" installs the shared libs used by python in the wrong place, so lets correct this
+	install -d $(CURDIR)/debian/rendermq/usr/lib/rendermq/pythonlibs
+	mv $(CURDIR)/debian/rendermq/usr/lib/dqueue.* $(CURDIR)/debian/rendermq/usr/lib/rendermq/pythonlibs
+	mv $(CURDIR)/debian/rendermq/usr/lib/mq_logging.* $(CURDIR)/debian/rendermq/usr/lib/rendermq/pythonlibs
+	mv $(CURDIR)/debian/rendermq/usr/lib/tile_storage.* $(CURDIR)/debian/rendermq/usr/lib/rendermq/pythonlibs
 
 	# config files
 	install -d $(CURDIR)/debian/rendermq/etc/rendermq

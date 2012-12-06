@@ -8,7 +8,7 @@ Homepage: https://github.com/MapQuest/MapQuest-Render-Stack
 
 Package: rendermq
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, adduser
+Depends: ${shlibs:Depends}, ${misc:Depends}, adduser, python (>= 2.6)
 Recommends: memcached
 Description: Tile render stack for OpenStreetMap and other maps.
  Programs to handle, queue, and render web map tile requests.

@@ -4,6 +4,7 @@
 #
 
 LOGDIR=/var/log/rendermq
+PYTHONPATH=/usr/lib/rendermq/pythonlibs
 
 while true; do
     /usr/lib/rendermq/worker/worker.py $* >$LOGDIR/worker-$$.log 2>&1
