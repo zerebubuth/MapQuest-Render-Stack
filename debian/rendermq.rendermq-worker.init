@@ -46,20 +46,20 @@ DAEMON_ARGS="$CONFDIR/worker.conf $CONFDIR/dqueue.conf"
 #
 do_start()
 {
-	# Return
-	#   0 if daemon has been started
-	#   1 if daemon was already running
-	#   2 if daemon could not be started
+    # Return
+    #   0 if daemon has been started
+    #   1 if daemon was already running
+    #   2 if daemon could not be started
     if [ $WORKERS != 0 ]; then
         for num in `seq 1 $WORKERS`; do
-	        start-stop-daemon --start --quiet --background --make-pidfile --pidfile $PIDFILE.$num.pid --exec $DAEMON --chuid $USER -- $DAEMON_ARGS || return 2
+            start-stop-daemon --start --quiet --background --make-pidfile --pidfile $PIDFILE.$num.pid --exec $DAEMON --chuid $USER -- $DAEMON_ARGS || return 2
         done
     else
         echo "$NAME disabled in /etc/default/rendermq, set WORKERS to nonzero value to enable."
     fi
-	# Add code here, if necessary, that waits for the process to be ready
-	# to handle requests from services started subsequently which depend
-	# on this one.  As a last resort, sleep for some time.
+    # Add code here, if necessary, that waits for the process to be ready
+    # to handle requests from services started subsequently which depend
+    # on this one.  As a last resort, sleep for some time.
 }
 
 #
@@ -67,15 +67,17 @@ do_start()
 #
 do_stop()
 {
-	# Return
-	#   0 if daemon has been stopped
-	#   1 if daemon was already stopped
-	#   2 if daemon could not be stopped
-	#   other if a failure occurred
-    ps ax | grep rendermq-run-worker | grep -v grep | cut -d' ' -f1
-    sleep 1
-    ps ax | grep worker.py | grep -v grep | cut -d' ' -f1 | xargs kill
-	return 0
+    # Return
+    #   0 if daemon has been stopped
+    #   1 if daemon was already stopped
+    #   2 if daemon could not be stopped
+    #   other if a failure occurred
+    for pid in `pgrep -u rendermq rendermq-run-wo`; do
+        childpid=`pgrep -u rendermq --parent $pid`
+        kill $pid
+        kill $childpid
+    done
+    return 0
 }
 
 #
