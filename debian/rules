@@ -58,6 +58,8 @@ install: build
 	install -d $(CURDIR)/debian/rendermq/etc/rendermq
 	install -m 0644 examples/dqueue.conf $(CURDIR)/debian/rendermq/etc/rendermq/dqueue.conf.example
 	install -m 0644 examples/tile_handler.conf $(CURDIR)/debian/rendermq/etc/rendermq/tile_handler.conf.example
+	install -m 0644 examples/tile_handler_logging.conf $(CURDIR)/debian/rendermq/etc/rendermq/tile_handler_logging.conf.example
+	install -m 0644 examples/tile_broker_logging.conf $(CURDIR)/debian/rendermq/etc/rendermq/tile_broker_logging.conf.example
 
 # Build architecture-independent files here.
 binary-indep: build install

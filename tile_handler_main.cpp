@@ -248,7 +248,7 @@ int main( int argc, char** argv)
    // try to load the logging configuration
    if (vm.count("logging-config")) 
    {
-      string logging_conf_file = vm["logging_config"].as<string>();
+      string logging_conf_file = vm["logging-config"].as<string>();
       try
       {
          pt::ptree logging_config;

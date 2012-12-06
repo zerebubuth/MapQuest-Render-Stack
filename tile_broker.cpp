@@ -125,7 +125,7 @@ int main (int argc, char** argv)
    // try to load the logging configuration
    if (vm.count("logging-config")) 
    {
-      std::string logging_conf_file = vm["logging_config"].as<std::string>();
+      std::string logging_conf_file = vm["logging-config"].as<std::string>();
       try
       {
          pt::ptree logging_config;
