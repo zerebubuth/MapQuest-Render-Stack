@@ -1,0 +1,12 @@
+#! /bin/sh
+
+set -e
+
+for dir in /var/run/rendermq /var/log/rendermq; do
+    if dpkg-statoverride --list $dir >/dev/null 2>&1; then
+        dpkg-statoverride --remove $dir
+        rmdir $i
+    fi
+done
+
+#DEBHELPER#

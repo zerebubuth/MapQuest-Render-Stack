@@ -21,7 +21,6 @@ NAME=tile_handler
 DAEMON=/usr/bin/$NAME
 USER=rendermq
 LOGLEVEL="info"
-DAEMON_ARGS="--config $CONFDIR/tile_handler.conf --queue-config $CONFDIR/dqueue.conf --instance $INSTANCE"
 PIDFILE=/var/run/rendermq/$NAME.pid
 SCRIPTNAME=/etc/init.d/rendermq-tilehandler
 
@@ -33,6 +32,7 @@ CONFDIR="/etc/rendermq"
 ENABLE_TILE_HANDLER=no
 INSTANCE="localhost_0"
 [ -r /etc/default/rendermq ] && . /etc/default/rendermq
+DAEMON_ARGS="--config=$CONFDIR/tile_handler.conf --queue-config=$CONFDIR/dqueue.conf --logging-config=$CONFDIR/tile_handler_logging.conf --instance $INSTANCE"
 
 # Load the VERBOSE setting and other rcS variables
 . /lib/init/vars.sh

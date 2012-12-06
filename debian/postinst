@@ -3,10 +3,10 @@
 set -e
 
 if ! getent passwd rendermq >/dev/null; then
-    adduser --group --system --no-create-home --shell /bin/bash --home /var/lib/rendermq rendermq
+    adduser --group --system --shell /bin/bash --home /var/lib/rendermq rendermq
 fi	
 
-for dir in /var/run/rendermq /var/log/rendermq /var/lib/rendermq; do
+for dir in /var/run/rendermq /var/log/rendermq /var/lib/rendermq/tiles; do
     [ -d $dir ] || mkdir -p $dir && chown rendermq:rendermq $dir
 done
 

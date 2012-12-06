@@ -21,7 +21,6 @@ NAME=tile_broker
 DAEMON=/usr/bin/$NAME
 USER=rendermq
 LOGLEVEL="info"
-DAEMON_ARGS="--name $BROKER_NAME --queue-config $CONFDIR/dqueue.conf"
 PIDFILE=/var/run/rendermq/$NAME.pid
 SCRIPTNAME=/etc/init.d/rendermq-tilebroker
 
@@ -33,6 +32,7 @@ CONFDIR="/etc/rendermq"
 ENABLE_TILE_BROKER=no
 BROKER_NAME="broker_localhost"
 [ -r /etc/default/rendermq ] && . /etc/default/rendermq
+DAEMON_ARGS="--name=$BROKER_NAME --queue-config=$CONFDIR/dqueue.conf --logging-config=$CONFDIR/tile_broker_logging.conf"
 
 # Load the VERBOSE setting and other rcS variables
 . /lib/init/vars.sh
