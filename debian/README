@@ -12,3 +12,15 @@ To clean up after building the debian package call (in the main directory):
 
  debuild clean
 
+Not all dependencies are declared properly. You also need
+
+* mongrel2 (no Debian package)
+* mapnik2 (install from source if you want a more current version or install
+  packages: python-mapnik2 libmapnik2-dev libmapnik2-2.0)
+
+and the following python packages:
+
+* PIL (Python Imaging Library) (no Debian package)
+* geojson (no Debian package)
+* Shapely (Debian package 'python-shapely')
+

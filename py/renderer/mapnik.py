@@ -156,7 +156,7 @@ class Renderer :
                     else:
                         c = " || ' ' || ".join(lc)
                     params['table'] = re.sub(re.compile('(name|\(?coalesce.*) as name', re.DOTALL), "(" + c + ") as name", params['table'])
-                    mq_logging.info("QUERY: layer='%s' labelhint='%s' table='%s'" % (layer.name, params.get('labelhint', ''), params['table']))
+                    mq_logging.debug("QUERY: layer='%s' labelhint='%s' table='%s'" % (layer.name, params.get('labelhint', ''), params['table']))
                     layer.datasource = CreateDatasource(params)
 
     def process(self, tile):
