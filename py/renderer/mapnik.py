@@ -118,14 +118,17 @@ class Renderer :
 
     def save_rendered_metadata(self, renderer, size, dimensions):
         #save off the meta data if its there
-	if renderer is not None:
-	    inmem = renderer.find_inmem_metawriter("poi-meta-data")
+        if renderer is not None:
+            try: # mapnik 2.1 doesn't have this
+                inmem = renderer.find_inmem_metawriter("poi-meta-data")
+            except:
+                return None
             if inmem is not None:
-       	        #get the bounding boxes and ids out of the mapnik data and save in a feature collection
+                # get the bounding boxes and ids out of the mapnik data and save in a feature collection
                 return extractFeaturesMNK(inmem)    
 
-	#no data so no feature collection
-	return None
+        #no data so no feature collection
+        return None
 
     # If the tile has a language parameter, change the datasource definition
     # in the map so that the language setting is taken into account. This is
@@ -133,7 +136,10 @@ class Renderer :
     def adjust_language(self, map, languages):
         if languages:
             for layer in self.default_map.layers:
-                params = layer.datasource.params().as_dict()
+                try:
+                    params = dict(layer.datasource.params()) ## mapnik >= 2.1
+                except:
+                    params = layer.datasource.params().as_dict() ## mapnik <= 2.0
                 if params.get('labelhint', '') != '':
                     lc = []
                     for lines in languages.split("|"):
@@ -156,8 +162,12 @@ class Renderer :
                     else:
                         c = " || ' ' || ".join(lc)
                     params['table'] = re.sub(re.compile('(name|\(?coalesce.*) as name', re.DOTALL), "(" + c + ") as name", params['table'])
-                    mq_logging.debug("QUERY: layer='%s' labelhint='%s' table='%s'" % (layer.name, params.get('labelhint', ''), params['table']))
-                    layer.datasource = CreateDatasource(params)
+                    mq_logging.debug(str("QUERY: layer='%s' labelhint='%s' table='%s'" % (layer.name, params.get('labelhint', ''), params['table'])))
+                    # the following is a workaround for mapnik >= 2.1
+                    d = dict()
+                    for p in params:
+                       d[str(p)] = str(params[p])
+                    layer.datasource = CreateDatasource(d)
 
     def process(self, tile):
         #from lat,lng bbox to mapnik bbox
