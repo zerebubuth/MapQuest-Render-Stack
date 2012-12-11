@@ -27,7 +27,7 @@
 #define TILE_STORAGE_HPP
 
 #include "../tile_protocol.hpp"
-#include <mapnik/utils.hpp>
+#include "../singleton.hpp"
 #include <boost/utility.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/optional.hpp>
@@ -102,11 +102,11 @@ typedef tile_storage * (* storage_creator)(boost::property_tree::ptree const&,
  * outside the implementation of tile_storage. it really doesn't need to be
  * in this header at all.
  */
-class tile_storage_factory : public mapnik::singleton<tile_storage_factory, mapnik::CreateStatic>,
+class tile_storage_factory : public rendermq::singleton<tile_storage_factory, rendermq::CreateStatic>,
                              private boost::noncopyable
 {
 public:
-   friend class mapnik::CreateStatic<tile_storage_factory>;
+   friend class rendermq::CreateStatic<tile_storage_factory>;
    bool add(std::string const& type, storage_creator func);
    bool remove(std::string const& type);
    tile_storage * create(boost::property_tree::ptree const& pt,

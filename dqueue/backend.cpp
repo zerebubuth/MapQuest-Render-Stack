@@ -24,7 +24,7 @@
  *-----------------------------------------------------------------------------*/
 
 #include "backend.hpp"
-#include <mapnik/utils.hpp>
+#include "singleton.hpp"
 #include <boost/optional.hpp>
 #include <boost/format.hpp>
 
@@ -37,11 +37,11 @@ using boost::optional;
 namespace pt = boost::property_tree;
 
 class backend_factory 
-   : public mapnik::singleton<backend_factory, mapnik::CreateStatic>,
+   : public rendermq::singleton<backend_factory, rendermq::CreateStatic>,
      private boost::noncopyable
 {
 public:
-   friend class mapnik::CreateStatic<backend_factory>;
+   friend class rendermq::CreateStatic<backend_factory>;
 
    bool add(const string &type, 
             runner_creator runner_factory_func, 
@@ -114,19 +114,19 @@ register_backend(const string &type,
                  runner_creator runner, 
                  supervisor_creator supervisor) 
 {
-   return backend_factory::instance()->add(type, runner, supervisor);
+   return backend_factory::instance().add(type, runner, supervisor);
 }
 
 runner_backend *
 create_runner(const pt::ptree &pt, zmq::context_t &ctx) 
 {
-   return backend_factory::instance()->create_runner(pt, ctx);
+   return backend_factory::instance().create_runner(pt, ctx);
 }
 
 supervisor_backend *
 create_supervisor(const pt::ptree &pt) 
 {
-   return backend_factory::instance()->create_supervisor(pt);
+   return backend_factory::instance().create_supervisor(pt);
 }
 
 }

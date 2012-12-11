@@ -73,13 +73,13 @@ bool register_tile_storage(std::string const& type,
                            storage_creator func)
 {
     
-    return tile_storage_factory::instance()->add(type, func);
+    return tile_storage_factory::instance().add(type, func);
 }
 
 tile_storage * get_tile_storage(boost::property_tree::ptree const& pt,
                                 boost::optional<zmq::context_t &> ctx)
 {
-   return tile_storage_factory::instance()->create(pt, ctx);
+   return tile_storage_factory::instance().create(pt, ctx);
 }
 
 }

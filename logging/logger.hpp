@@ -29,9 +29,9 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/format.hpp>
 #include <boost/scoped_ptr.hpp>
-#include <mapnik/utils.hpp>
 #include <string>
 
+#include "singleton.hpp"
 #include "config.hpp"
 
 namespace rendermq {
@@ -60,11 +60,11 @@ public:
 };
 
 class log
-   : public mapnik::singleton<log, mapnik::CreateStatic>,
+   : public rendermq::singleton<log, rendermq::CreateStatic>,
      private boost::noncopyable
 {
 public:
-   friend class mapnik::CreateStatic<log>;
+   friend class rendermq::CreateStatic<log>;
 
    // utility methods to do logging
    static void finer(const boost::format &);
@@ -81,7 +81,7 @@ public:
 
    static bool want_level(log_level::type level)
    {
-      return instance()->m_log_level <= level;
+      return instance().m_log_level <= level;
    }
 
    static bool set_level_from_string(const std::string& new_level);

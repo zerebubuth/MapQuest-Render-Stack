@@ -25,7 +25,7 @@
 
 #include "logger.hpp"
 #include "stdout_logger.hpp"
-#include <mapnik/utils.hpp>
+#include "singleton.hpp"
 #include <map>
 
 using std::map;
@@ -38,11 +38,11 @@ logger::~logger() {}
 /* factory / singleton for accessing logging functionality.
  */
 class logger_factory
-   : public mapnik::singleton<logger_factory, mapnik::CreateStatic>,
+   : public rendermq::singleton<logger_factory, rendermq::CreateStatic>,
      private boost::noncopyable
 {
 public:
-   friend class mapnik::CreateStatic<logger_factory>;
+   friend class rendermq::CreateStatic<logger_factory>;
 
    bool add(const string &type, logger_creator func);
 
@@ -75,28 +75,28 @@ logger_factory::create(const boost::property_tree::ptree &conf) const
    return 0;
 }
    
-void log::finer(const boost::format &fmt)   { log::instance()->m_logger->log(log_level::finer,   fmt.str()); }
-void log::info(const boost::format &fmt)    { log::instance()->m_logger->log(log_level::info,    fmt.str()); }
-void log::debug(const boost::format &fmt)   { log::instance()->m_logger->log(log_level::debug,   fmt.str()); }
-void log::warning(const boost::format &fmt) { log::instance()->m_logger->log(log_level::warning, fmt.str()); }
-void log::error(const boost::format &fmt)   { log::instance()->m_logger->log(log_level::error,   fmt.str()); }
+void log::finer(const boost::format &fmt)   { log::instance().m_logger->log(log_level::finer,   fmt.str()); }
+void log::info(const boost::format &fmt)    { log::instance().m_logger->log(log_level::info,    fmt.str()); }
+void log::debug(const boost::format &fmt)   { log::instance().m_logger->log(log_level::debug,   fmt.str()); }
+void log::warning(const boost::format &fmt) { log::instance().m_logger->log(log_level::warning, fmt.str()); }
+void log::error(const boost::format &fmt)   { log::instance().m_logger->log(log_level::error,   fmt.str()); }
 
-void log::finer(const std::string &msg)   { log::instance()->m_logger->log(log_level::finer,   msg); }
-void log::info(const std::string &msg)    { log::instance()->m_logger->log(log_level::info,    msg); }
-void log::debug(const std::string &msg)   { log::instance()->m_logger->log(log_level::debug,   msg); }
-void log::warning(const std::string &msg) { log::instance()->m_logger->log(log_level::warning, msg); }
-void log::error(const std::string &msg)   { log::instance()->m_logger->log(log_level::error,   msg); }
+void log::finer(const std::string &msg)   { log::instance().m_logger->log(log_level::finer,   msg); }
+void log::info(const std::string &msg)    { log::instance().m_logger->log(log_level::info,    msg); }
+void log::debug(const std::string &msg)   { log::instance().m_logger->log(log_level::debug,   msg); }
+void log::warning(const std::string &msg) { log::instance().m_logger->log(log_level::warning, msg); }
+void log::error(const std::string &msg)   { log::instance().m_logger->log(log_level::error,   msg); }
 
 bool log::set_level_from_string(const std::string& new_level)
 {
     if (new_level == "finer") {
-        log::instance()->set_level(log_level::finer);
+        log::instance().set_level(log_level::finer);
         return true;
     } else if (new_level == "debug") {
-        log::instance()->set_level(log_level::debug);
+        log::instance().set_level(log_level::debug);
         return true;
     } else if (new_level == "info") {
-        log::instance()->set_level(log_level::info);
+        log::instance().set_level(log_level::info);
         return true;
     }
     return false; 
@@ -107,7 +107,7 @@ void log::configure(const boost::property_tree::ptree &conf)
    boost::scoped_ptr<logger> new_logger(create_logger(conf));
    if (new_logger) 
    {
-      instance()->m_logger.swap(new_logger);
+      instance().m_logger.swap(new_logger);
       finer("Logging reconfigured.");
    }
    else
@@ -124,12 +124,12 @@ log::log()
 
 bool register_logger(const string &type, logger_creator func)
 {
-   return logger_factory::instance()->add(type, func);
+   return logger_factory::instance().add(type, func);
 }
 
 logger *create_logger(const boost::property_tree::ptree &conf)
 {
-   return logger_factory::instance()->create(conf);
+   return logger_factory::instance().create(conf);
 }
 
 } // namespace rendermq
