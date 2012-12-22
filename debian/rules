@@ -15,7 +15,7 @@ configure-stamp:
 	
 	# Add here commands to configure the package.
 	./autogen.sh
-	./configure --prefix=/usr
+	./configure --prefix=/usr --enable-debug
 
 	touch configure-stamp
 
