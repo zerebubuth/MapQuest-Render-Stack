@@ -211,7 +211,7 @@ inline bool serialise(const tile_protocol &tile, std::string &buf) {
    t.set_style(tile.style);
    t.set_format(tile.format);
 
-   if (tile.priority >= 0) { t.set_priority(tile.priority); }
+   t.set_priority(tile.get_priority());
    if (tile.last_modified != 0) { t.set_last_modified(tile.last_modified); }
    if (tile.request_last_modified != 0) { t.set_request_last_modified(tile.request_last_modified); }
 
