@@ -27,9 +27,18 @@
 #ifndef RENDERMQ_HASHWRAPPER_HPP
 #define RENDERMQ_HASHWRAPPER_HPP
 
+#include "config.hpp"
 #include "meta_tile.hpp"
 
+// hashkit changed their headers at some point to take the C++ stuff and put
+// it in a different file. the configure script should detect this and set
+// HAVE_HASHKIT_HPP appropriately.
+#ifdef HAVE_HASHKIT_HPP
+#include <libhashkit-1.0/hashkit.hpp>
+#else
 #include <libhashkit/hashkit.h>
+#endif
+
 #include <libmemcached/memcached.h>
 #include <stdexcept>
 #include <vector>

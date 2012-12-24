@@ -58,6 +58,9 @@ AM_CONDITIONAL([HAVE_BOOST_PYTHON],[test "x$BOOST_PYTHON_LIB" != "x"])
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h stdint.h string.h sys/socket.h unistd.h])
 AC_CHECK_HEADER([mapnik/utils.hpp], [], [AC_MSG_FAILURE([Could not find mapnik headers, please install mapnik.])])
 
+# check if we have hashkit-1.0 with the hpp file
+AC_CHECK_HEADER([libhashkit-1.0/hashkit.hpp], [AC_DEFINE([HAVE_HASHKIT_HPP], [1], [Define if the CPP hashkit header is available])], [])
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
 AC_C_INLINE
