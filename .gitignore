@@ -43,3 +43,15 @@ tile_submitter
 # python
 *.pyc
 
+# test binaries and log files
+test/test_consistent_hash
+test/test_disk_storage
+test/test_handler
+test/test_mongrel_request_parser
+test/test_per_style_storage
+test/test_priority_queue
+test/test_style_rules
+test/test_union_storage
+test/test_zmq_queue
+test/test_zstream
+test/testlogs

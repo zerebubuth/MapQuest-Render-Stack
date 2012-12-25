@@ -26,6 +26,7 @@
 #include "common.hpp"
 #include "../logging/logger.hpp"
 #include <boost/property_tree/ptree.hpp>
+#include <boost/filesystem.hpp>
 #include <stdexcept>
 #include <iostream>
 #include <iomanip>
@@ -51,7 +52,16 @@ namespace {
 
 void run_with_output_redirected_to(const string &name, function<void ()> test) {
   // create a file for the output to go to.
-  string file_name = string("log/") + name + ".testlog";
+  string logdir = "testlogs";
+  if (!boost::filesystem::is_directory(logdir))
+  {
+    if (!boost::filesystem::create_directories(logdir))
+    {
+      throw std::runtime_error("Unable to create directory for test logs.");
+    }
+  }
+
+  string file_name = logdir + string("/") + name + ".testlog";
   boost::property_tree::ptree conf;
   conf.put("type", "file");
   conf.put("location", file_name);

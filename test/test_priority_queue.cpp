@@ -339,5 +339,5 @@ int main() {
 
   cout << " >> Tests failed: " << tests_failed << endl << endl;
 
-  return 0;
+  return (tests_failed > 0) ? 1 : 0;
 }

@@ -1,4 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4
+SUBDIRS = . test
 
 bin_PROGRAMS = tile_handler tile_broker broker_ctl expire_tiles tile_submitter
 lib_LTLIBRARIES = \
