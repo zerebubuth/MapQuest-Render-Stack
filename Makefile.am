@@ -1,4 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4
+SUBDIRS = . test
 
 CXXFLAGS = -Wall -Wno-long-long -pedantic
 
