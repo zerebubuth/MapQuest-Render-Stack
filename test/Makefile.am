@@ -35,8 +35,7 @@ test_disk_storage_LDADD = \
 	$(DEPS_LIBS) $(BOOST_LIBS)
 
 test_handler_SOURCES = \
-	test_handler.cpp \
-	../tile_path_parser.cpp
+	test_handler.cpp
 test_handler_CPPFLAGS = $(DEPS_CFLAGS) $(BOOST_CPPFLAGS)
 test_handler_LDADD = \
 	../librendermq_logging.la \
@@ -78,7 +77,6 @@ test_priority_queue_LDADD = \
 test_style_rules_SOURCES = \
 	test_style_rules.cpp \
 	../mongrel_request.cpp \
-	../tile_path_parser.cpp \
 	../mongrel_request_parser.cpp \
 	../storage_worker.cpp \
 	../tile_handler.cpp

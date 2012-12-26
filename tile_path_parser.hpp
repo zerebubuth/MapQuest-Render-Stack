@@ -75,8 +75,8 @@ class tile_path_parser : boost::noncopyable {
          suffix(">[-A-Za-z0-9_.%,|]*)"),
          params(),
          additional_params(ap) {
-            params["style"]  = "(?P<style>[A-Za-z0-9_]+)"; // map style
-            params["z"]      = "(?P<z>[12]?[0-9])"; // zoom level
+            params["style"]  = "(?P<style>([A-Za-z][A-Za-z0-9_]*(/[A-Za-z][A-Za-z0-9_]*)*))"; // map style
+            params["z"]      = "(?P<z>[0-9]+)"; // zoom level
             params["x"]      = "(?P<x>[0-9]{1,7})"; // x coordinate with 1 to 7 digits
             params["y"]      = "(?P<y>[0-9]{1,7})"; // x coordinate with 1 to 7 digits
             params["format"] = "(?P<format>(png|jpg|jpeg|gif|json))"; // map image format
@@ -143,7 +143,7 @@ public:
       path_regex = boost::xpressive::sregex::compile(path_regex_string);
    }
 
-   inline char hex2num(char c) {
+   inline char hex2num(char c) const {
       if (c >= '0' && c <= '9') return c - '0';
       if (c >= 'a' && c <= 'f') return c - 'a' + 10;
       if (c >= 'A' && c <= 'F') return c - 'A' + 10;
@@ -153,7 +153,7 @@ public:
    /**
     * Decodes %XX escapes. Returns empty string if something looks fishy.
     */
-   inline std::string url_decode(const std::string& in) {
+   inline std::string url_decode(const std::string& in) const {
       std::string out;
 
       const char* c = in.c_str();
@@ -186,7 +186,7 @@ public:
    * usually you would use an object of class tile_protocol.
    */
    template <class Results>
-   bool operator()(Results& results, const std::string& path) {
+   bool operator()(Results& results, const std::string& path) const {
       boost::xpressive::smatch match_results;
 
       if (!boost::xpressive::regex_match(path, match_results, path_regex)) {

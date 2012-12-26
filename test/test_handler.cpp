@@ -64,7 +64,10 @@ private:
    tile_path_parser path_parser;
 
 public:
-   url(const string &u) : url_(u) {}
+  url(const string &u) 
+  : url_(u),
+    path_parser("/tiles/1.0.0/{STYLE}/{Z}/{X}/{Y}.{FORMAT}")
+  {}
    void should_give(const tile_protocol &tile) const {
       tile_protocol parsed;
       if (!path_parser(parsed, url_)) {
@@ -206,9 +209,6 @@ void test_path_parsing_invalid() {
    url("/tiles/1.0.0/1osm/0/0/0.png").should_be_invalid();
    url("/tiles/1.0.0/1osm/map/0/0/0.png").should_be_invalid();
    url("/tiles/1.0.0/osm/1map/0/0/0.png").should_be_invalid();
-
-   // style names can't have non-alphanumeric characters in them
-   url("/tiles/1.0.0/osm_foo/0/0/0.png").should_be_invalid();
 }
 
 void test_date_parsing() 
